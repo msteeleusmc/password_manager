@@ -18,7 +18,7 @@ fa = None
 class SampleApp(Tk):
     def __init__(self):
         Tk.__init__(self)
-        global theme, show_img, hide_img
+        global theme
         if os.path.isfile('data/app data/app_data.p'):
             f1 = open('data/app data/app_data.p', 'rb')
             theme = pickle.load(f1)
@@ -28,7 +28,6 @@ class SampleApp(Tk):
 
         self.title('Password Manager')
         self.geometry('710x600')
-        self.wm_iconbitmap("data/img/icon.ico")
         if theme == 1:
             self.light()
         elif theme == 2:
@@ -42,9 +41,6 @@ class SampleApp(Tk):
         menubar = UserMenu(self)
         self.config(menu=menubar)
 
-        # self.back_img=ImageTk.PhotoImage(Image.open('data/img/back2.png'))
-        show_img = ImageTk.PhotoImage(Image.open('data/img/show.png'))
-        hide_img = ImageTk.PhotoImage(Image.open('data/img/hide.png'))
         self._frame = None
         self.switch_frame(Login_page)
 
@@ -144,9 +140,9 @@ class Login_page(Frame, Menu):
         frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
 
-        self.login_img = ImageTk.PhotoImage(Image.open('data/img/login.png'))
 
-        ttk.Label(frame1, image=self.login_img, ).grid(row=0, column=0, pady=(150, 5))
+
+        ttk.Label(frame1,).grid(row=0, column=0, pady=(150, 5))
         ttk.Label(frame1, text='LOGIN', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self, bg=bg_color)
@@ -164,17 +160,15 @@ class Login_page(Frame, Menu):
             if a == 1:  # p.configure(show='*'):
                 p.config(show='')
                 self.x = a + 1
-                # b['text']='H'
-                b['image'] = hide_img
+
             elif a == 2:  # p.configure(show=''):
                 p.config(show='*')
                 self.x = a - 1
-                # b['text']='S'
-                b['image'] = show_img
+
 
         # show_style=ttk.Style()
         # show_style.configure('s.TButton',borderwidth=0,bd=0,background=)
-        b = Button(frame3, text='S', command=lambda: view_pass(self.x), width=0, image=show_img, bd=0)
+        b = Button(frame3, text='S', command=lambda: view_pass(self.x), width=0, bd=0)
         b.grid(row=2, column=3)
 
         style = ttk.Style()
@@ -224,11 +218,9 @@ class sign_up_page(Frame):
 
         Style1 = ttk.Style()
         Style1.configure('TLabel', background=bg_color, foreground='slateblue')
-        Style2 = ttk.Style().configure('login.TLabel', background=bg_color, foreground='slateblue',
-                                       font='Helvetica 30 bold')
-        self.signup_img = ImageTk.PhotoImage(Image.open('data/img/signup.png'))
 
-        ttk.Label(frame1, image=self.signup_img).grid(row=0, column=0, pady=(150, 5))
+
+        ttk.Label(frame1).grid(row=0, column=0, pady=(150, 5))
         ttk.Label(frame1, text='SIGN UP', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self, bg=bg_color)
@@ -245,13 +237,12 @@ class sign_up_page(Frame):
             if a == 1:  # p.configure(show='*'):
                 p.config(show='')
                 self.x = a + 1
-                b['image'] = hide_img
+
             elif a == 2:  # p.configure(show=''):
                 p.config(show='*')
                 self.x = a - 1
-                b['image'] = show_img
 
-        b = Button(frame3, text='S', command=lambda: view_pass(self.x), bd=0, image=hide_img)
+        b = Button(frame3, text='S', command=lambda: view_pass(self.x), bd=0)
         b.grid(row=2, column=3)
 
         frame2 = Frame(self, bg=bg_color)
@@ -295,19 +286,14 @@ class Manager_Page(Frame):
 
         frame = Frame(self, bg=bg_color)
         frame.pack(pady=(50, 0))
-        self.lock_img = ImageTk.PhotoImage(Image.open('data/img/manager.png'))
-        title_img = ttk.Label(frame, image=self.lock_img, style='title.TLabel')
-        title_img.grid(row=0, column=0, padx=10)
+
+
         title_label = ttk.Label(frame, text='PASSWORD MANAGER', style='title.TLabel')
         title_label.grid(row=0, column=1)
 
         but_frame = Frame(self, bg=bg_color)
         but_frame.pack()
 
-        self.change_img = ImageTk.PhotoImage(Image.open(f"data/img/change.png"))
-        self.add_img = ImageTk.PhotoImage(Image.open(f"data/img/add.png"))
-        self.delete_img = ImageTk.PhotoImage(Image.open(f"data/img/delete.png"))
-        self.view_img = ImageTk.PhotoImage(Image.open(f"data/img/view.png"))
 
         def Run(n):
             if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
@@ -320,10 +306,10 @@ class Manager_Page(Frame):
             else:
                 msg.showwarning('Nothing to show', 'You haven\'t save any thing')
 
-        but1 = ttk.Button(but_frame, image=self.add_img, command=lambda: master.switch_frame(Add_Pass))
-        but2 = ttk.Button(but_frame, image=self.delete_img, command=lambda: Run(2))
-        but3 = ttk.Button(but_frame, image=self.change_img, command=lambda: Run(3))
-        but4 = ttk.Button(but_frame, image=self.view_img, command=lambda: Run(1))
+        but1 = ttk.Button(but_frame, command=lambda: master.switch_frame(Add_Pass))
+        but2 = ttk.Button(but_frame, command=lambda: Run(2))
+        but3 = ttk.Button(but_frame, command=lambda: Run(3))
+        but4 = ttk.Button(but_frame, command=lambda: Run(1))
 
         but1.grid(row=1, column=0, pady=(50, 40), padx=(0, 40))
         but2.grid(row=1, column=1, pady=(50, 40), padx=(40, 0))
@@ -345,13 +331,10 @@ class Show_Pass(Frame):
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
-        self.label_img = ImageTk.PhotoImage(Image.open('data/img/view_s.png'))
 
         title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
-        title_img = ttk.Label(title_frame, image=self.label_img)
-        title_img.grid(row=0, column=0, padx=10)
         title_label = ttk.Label(title_frame, text='VIEW', style='title2.TLabel')
         title_label.grid(row=0, column=1, pady=30)
 
@@ -437,12 +420,11 @@ class Delete_Pass(Show_Pass):
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
-        self.label_img = ImageTk.PhotoImage(Image.open('data/img/delete_s.png'))
+
 
         title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
-        title_img = ttk.Label(title_frame, image=self.label_img)
-        title_img.grid(row=0, column=0, padx=10)
+
         title_label = ttk.Label(title_frame, text='DELETE', style='title2.TLabel')
         title_label.grid(row=0, column=1, pady=30)
 
@@ -547,12 +529,10 @@ class Add_Pass(Frame):
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
-        self.label_img = ImageTk.PhotoImage(Image.open('data/img/add_s.png'))
 
         title_frame = Frame(self, bg=bg_color)
         title_frame.grid(row=0, column=0)
-        title_img = ttk.Label(title_frame, image=self.label_img)
-        title_img.grid(row=0, column=0, padx=10)
+
         add = ttk.Label(title_frame, text='ADD', style='title2.TLabel')
         add.grid(row=0, column=1, pady=30)
 
@@ -612,13 +592,13 @@ class Add_Pass(Frame):
             if a == 1:  # p.configure(show='*'):
                 password_Entry.config(show='')
                 self.x = a + 1
-                b['image'] = hide_img
+
             elif a == 2:  # p.configure(show=''):
                 password_Entry.config(show='*')
                 self.x = a - 1
-                b['image'] = show_img
 
-        b = Button(Label_Frame, text='Show', command=lambda: view_pass(self.x), image=show_img, bd=0)
+
+        b = Button(Label_Frame, text='Show', command=lambda: view_pass(self.x), bd=0)
         b.grid(row=4, column=2)
 
         but_frame = Frame(self, bg=bg_color)
@@ -719,13 +699,9 @@ class Change_Pass(Frame):
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
-        self.label_img = ImageTk.PhotoImage(Image.open('data/img/change_s.png'))
-
         title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
-        title_img = ttk.Label(title_frame, image=self.label_img)
-        title_img.grid(row=0, column=0, padx=10)
         title_label = ttk.Label(title_frame, text='CHANGE', style='title2.TLabel')
         title_label.grid(row=0, column=1, pady=30)
 
@@ -838,12 +814,9 @@ class Change_pass_label(Frame):
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
-        self.label_img = ImageTk.PhotoImage(Image.open('data/img/change_s.png'))
 
         title_frame = Frame(self, bg=bg_color)
         title_frame.grid(row=0, column=0)
-        title_img = ttk.Label(title_frame, image=self.label_img)
-        title_img.grid(row=0, column=0, padx=10)
         add = ttk.Label(title_frame, text='CHANGE', style='title2.TLabel')
         add.grid(row=0, column=1, pady=30)
 
@@ -903,13 +876,12 @@ class Change_pass_label(Frame):
             if a == 1:  # p.configure(show='*'):
                 password_Entry.config(show='')
                 self.x = a + 1
-                b['image'] = hide_img
+
             elif a == 2:  # p.configure(show=''):
                 password_Entry.config(show='*')
                 self.x = a - 1
-                b['image'] = show_img
 
-        b = Button(Label_Frame, text='Show', command=lambda: view_pass(self.x), image=show_img, bd=0)
+        b = Button(Label_Frame, text='Show', command=lambda: view_pass(self.x), bd=0)
         b.grid(row=4, column=2)
 
         def change():
@@ -1008,8 +980,7 @@ class select_Generator(Frame):
 
         f = Frame(self, bg=bg_color)
         f.pack()
-        self.lock_img = ImageTk.PhotoImage(Image.open('data/img/lock.png'))
-        title_img = ttk.Label(f, image=self.lock_img, style='title.TLabel').grid(row=0, column=0, pady=18)
+
         ttk.Label(f, text='Password Generator', style='title2.TLabel').grid(row=0, column=1)
 
         f2 = Frame(self, bg=bg_color)
@@ -1090,8 +1061,7 @@ class Pass_Generator(Frame):
 
         f = Frame(self, bg=bg_color)
         f.pack()
-        self.lock_img = ImageTk.PhotoImage(Image.open('data/img/lock.png'))
-        title_img = ttk.Label(f, image=self.lock_img, style='title.TLabel').grid(row=0, column=0, pady=18)
+
         ttk.Label(f, text='Password Generator', style='title2.TLabel').grid(row=0, column=1)
 
         frame = Frame(self, bg=bg_color, )
@@ -1179,9 +1149,7 @@ class Delete_acc(Frame):
         frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
 
-        self.acc_delete_img = ImageTk.PhotoImage(Image.open('data/img/acc_delete.png'))
-
-        ttk.Label(frame1, image=self.acc_delete_img, ).grid(row=0, column=0, pady=(100, 10))
+        ttk.Label(frame1).grid(row=0, column=0, pady=(100, 10))
         ttk.Label(frame1, text='Delete Account', style='login.TLabel').grid(row=0, column=1, pady=(100, 10),
                                                                             padx=(8, 0))
 

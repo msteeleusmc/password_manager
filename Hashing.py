@@ -27,7 +27,8 @@ cursor.execute("""
         id INTEGER PRIMARY KEY,
         website TEXT NOT NULL,
         username TEXT NOT NULL,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        user_id INTEGER NUT NULL
     );
 """)
 
@@ -158,6 +159,9 @@ class FirstScreen(Frame):
             msg.showerror("ERROR","You must pick a different user name")
             master.switch_frame(FirstScreen)
         else:
+            genwrite_key(newUser.get())
+            a = encrypt_(newUser.get(), newUser.get())
+
             hashedPassword = hash_(newPass.get())
             insertUser = """INSERT INTO masterpassword(username, password) VALUES (?, ?)"""
             data = (newUser.get(), hashedPassword)
@@ -289,9 +293,13 @@ class AddUserAccount(Frame):
                     list_ = [encrypt_(self.username.get(), user.get()),
                              encrypt_(self.password.get(), user.get())]
 
-                    insertAccount = """INSERT INTO vault(website, username, password) VALUES (?, ?, ?)"""
+                    get_ID = cursor.execute("""SELECT id FROM masterpassword WHERE username = ?""", (user.get(),))
+                    row = int(get_ID.fetchone()[0])
 
-                    data = (self.type.get(), list_[0], list_[1])
+
+                    insertAccount = """INSERT INTO vault(website, username, password, user_id) VALUES (?, ?, ?, ?)"""
+
+                    data = (self.type.get(), list_[0], list_[1], row)
 
                     cursor.execute(insertAccount, data)
                     db.commit()
@@ -351,56 +359,12 @@ class ShowList(Frame):
         main_frame2.config(padx=10)
         canvas.create_window(0, 0, window=main_frame, anchor='nw')
 
-        checkName = cursor.execute("""SELECT * FROM vault WHERE username = ?""", (newUser.get(),))
-        row = checkName.fetchall()
-        #if row:
-        with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
-            self.dic = pickle.load(f)
+        get_ID = cursor.execute("""SELECT id FROM masterpassword WHERE username = ?""", (user.get(),))
+        row = int(get_ID.fetchone()[0])
 
-        for k, v in self.dic.items():
-            self.key.append(k)
-            self.value.append(v)
+        get_Info = cursor.execute("""SELECT * FROM vault WHERE user_id = ?""", (row,))
+        print(get_Info.fetchall())
 
-        style = ttk.Style()
-        style.configure('TLabel', font='Helvetica 10 ')
-        style1 = ttk.Style()
-        style1.configure('title.TLabel', font='Helvetica 11 bold')
-
-        ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
-        # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
-        ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
-        ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(20, 0), pady=(0, 15))
-
-        for i in range(0, len(self.dic)):
-            ttk.Label(main_frame, text=f'{i + 1}]').grid(row=i + 1, column=1, pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2,
-                                                                                                    padx=(10, 40),
-                                                                                                    pady=(15, 0))
-            ttk.Label(main_frame,
-                      text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
-                      style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
-            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                         column=4,
-                                                                                                         padx=(0, 30),
-                                                                                                         pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                         column=5,
-                                                                                                         padx=(10, 0),
-                                                                                                         pady=(15, 0))
-
-        def back(master):
-            master.switch_frame(UserPage)
-
-        style = ttk.Style()
-        style.configure('TButton', borderwidth=5)
-
-        ttk.Button(root, text='Back', command=lambda: back(master), style='TButton').grid(row=2, column=0)
-
-        root.update()
-        canvas.config(scrollregion=canvas.bbox("all"))
-
-        # return main_frame,self.dic,root
 
 # ------------------------------------------------------------------GLOBAL FUNCTIONS-----------------------------------------------------------
 
@@ -408,6 +372,11 @@ def hash_(input):
     hash = hashlib.sha256(str.encode(input)).hexdigest()
 
     return hash
+
+def genwrite_key(username):
+    key = Fernet.generate_key()
+    with open(f"data/key/{username}.key", "wb") as key_file:
+        key_file.write(key)
 
 def encrypt_(msg, username):
     key = call_key(username)
