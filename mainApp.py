@@ -17,7 +17,7 @@ class SampleApp(Tk):
     def __init__(self):
         Tk.__init__(self)
         global theme
-        if os.path.isfile('data/app data/app_data.p') & os.path.getsize('data/app data/app_data.p') > 0:
+        if os.path.isfile('data/app data/app_data.p'):
             f1 = open('data/app data/app_data.p', 'rb')
             theme = pickle.load(f1)
             f1.close()
@@ -459,14 +459,14 @@ class Add_Pass(Frame):
         add.grid(row=0, column=1, pady=30)
 
         self.type = StringVar()
-        self.email = StringVar()
-        self.phone_num = StringVar()
+        #self.email = StringVar()
+        #self.phone_num = StringVar()
         self.username = StringVar()
         self.password = StringVar()
 
         self.type.set('')
-        self.email.set('')
-        self.phone_num.set('')
+        #self.email.set('')
+        #self.phone_num.set('')
         self.username.set('')
         self.password.set('')
 
@@ -483,17 +483,17 @@ class Add_Pass(Frame):
         type_Entry.grid(row=0, column=1, padx=10, pady=10)
         i += 1
 
-        email_label = ttk.Label(Label_Frame, text=f'{i}] Email:', style="TLabel")
-        email_label.grid(row=1, column=0, padx=10, pady=20)
-        email_Entry = ttk.Entry(Label_Frame, textvariable=self.email, width=30)
-        email_Entry.grid(row=1, column=1, padx=10, pady=10)
-        i += 1
+        #email_label = ttk.Label(Label_Frame, text=f'{i}] Email:', style="TLabel")
+        #email_label.grid(row=1, column=0, padx=10, pady=20)
+        #email_Entry = ttk.Entry(Label_Frame, textvariable=self.email, width=30)
+        #email_Entry.grid(row=1, column=1, padx=10, pady=10)
+        #i += 1
 
-        phone_num_label = ttk.Label(Label_Frame, text=f'{i}] Phone No.:', style="TLabel")
-        phone_num_label.grid(row=2, column=0, padx=10, pady=20)
-        phone_num_Entry = ttk.Entry(Label_Frame, textvariable=self.phone_num, width=30)
-        phone_num_Entry.grid(row=2, column=1, padx=10, pady=10)
-        i += 1
+        #phone_num_label = ttk.Label(Label_Frame, text=f'{i}] Phone No.:', style="TLabel")
+        #phone_num_label.grid(row=2, column=0, padx=10, pady=20)
+        #phone_num_Entry = ttk.Entry(Label_Frame, textvariable=self.phone_num, width=30)
+        #phone_num_Entry.grid(row=2, column=1, padx=10, pady=10)
+        #i += 1
 
         username_label = ttk.Label(Label_Frame, text=f'{i}] Username:', style="TLabel")
         username_label.grid(row=3, column=0, padx=10, pady=20)
@@ -531,8 +531,8 @@ class Add_Pass(Frame):
 
         def clear(self):
             self.type.set('')
-            self.email.set('')
-            self.phone_num.set('')
+            #self.email.set('')
+            #self.phone_num.set('')
             self.username.set('')
             self.password.set('')
 
@@ -547,54 +547,19 @@ class Add_Pass(Frame):
             if self.type.get() == '' or self.password.get() == '':
                 msg.showerror('Wrong Input', 'Please Add Password or its Type')
             else:
-                if self.phone_num.get() == '':
-                    self.phone_num.set('---')
-                    if self.email.get() == '':
-                        self.email.set('---')
+                self.dic = {}
+                list_ = [encrypt_(self.username.get(), user.get()),
+                         encrypt_(self.password.get(), user.get())]
 
-                    if self.username.get() == '':
-                        self.username.set('---')
-
-                    self.dic = {}
-                    list_ = [encrypt_(self.email.get(), user.get()),
-                             encrypt_(self.phone_num.get(), user.get()),
-                             encrypt_(self.username.get(), user.get()),
-                             encrypt_(self.password.get(), user.get())]
-
-                    if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
-                        with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
-                            self.dic = pickle.load(f)
-                    self.dic[encrypt_(self.type.get(), user.get())] = list_
-                    with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
-                        pickle.dump(self.dic, f)
-                    msg.showinfo('Add Sucessfull', 'Your Password data has been added')
-                    master.switch_frame(Manager_Page)
-                else:
-                    try:
-                        val = int(self.phone_num.get())
-                        if self.email.get() == '':
-                            self.email.set('---')
-
-                        if self.username.get() == '':
-                            self.username.set('---')
-
-                        self.dic = {}
-                        list_ = [encrypt_(self.email.get(), user.get()),
-                                 encrypt_(self.phone_num.get(), user.get()),
-                                 encrypt_(self.username.get(), user.get()),
-                                 encrypt_(self.password.get(), user.get())]
-
-                        if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
-                            with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
-                                self.dic = pickle.load(f)
-                        self.dic[encrypt_(self.type.get(), user.get())] = list_
-                        with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
-                            pickle.dump(self.dic, f)
-                        msg.showinfo('Add Sucessfull', 'Your Password data has been added')
-                        master.switch_frame(Manager_Page)
-
-                    except ValueError:
-                        msg.showerror('Wrong input', 'Please Add valid Phone no')
+                if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
+                    with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
+                        self.dic = pickle.load(f)
+                self.dic[encrypt_(self.type.get(), user.get())] = list_
+                with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
+                    pickle.dump(self.dic, f)
+                msg.showinfo('Add Sucessfull', 'Your Password data has been added')
+                master.switch_frame(Manager_Page)
+            
 
         save_but = ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0, column=0, padx=10)
         clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,column=1, padx=10)
