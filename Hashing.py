@@ -112,6 +112,7 @@ class LoginScreen(Frame, Menu):
 
     def login_page(self, master):
         hash1 = hash_(passs.get())
+
         hash2 = cursor.execute('SELECT password FROM masterpassword WHERE username = ?', (user.get(),))
         row = str(hash2.fetchone()[0])
         if(hash1 == row):
@@ -164,7 +165,7 @@ class FirstScreen(Frame):
 
             hashedPassword = hash_(newPass.get())
             insertUser = """INSERT INTO masterpassword(username, password) VALUES (?, ?)"""
-            data = (newUser.get(), hashedPassword)
+            data = (a, hashedPassword)
             cursor.execute(insertUser, data)
             db.commit()
 

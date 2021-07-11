@@ -3,7 +3,6 @@
 from tkinter import *
 import tkinter.ttk as ttk
 import tkinter.messagebox as msg
-from PIL import Image, ImageTk
 from cryptography.fernet import Fernet
 from random import *
 import os, pickle
