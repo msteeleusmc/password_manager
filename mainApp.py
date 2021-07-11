@@ -4,25 +4,32 @@ from tkinter import *
 import tkinter.ttk as ttk
 import tkinter.messagebox as msg
 from cryptography.fernet import Fernet
+from random import *
 import os, pickle
 import hashlib
 
 # -------------------------------------------------------------------GLOBAL------------------------------------------------------------------
 
-global_type = None
+fa = None
 
 # -------------------------------------------------------------------GUI CLASS-----------------------------------------------------------------
 class SampleApp(Tk):
     def __init__(self):
         Tk.__init__(self)
         global theme
-        if os.path.isfile('data/app data/app_data.p'):
+        if os.path.isfile('data/app data/app_data.p') & os.path.getsize('data/app data/app_data.p') > 0:
             f1 = open('data/app data/app_data.p', 'rb')
             theme = pickle.load(f1)
             f1.close()
+        else:
+            theme = 2
 
-        self.title("Steele's Password Manager Project")
+        self.title('Password Manager')
         self.geometry('710x600')
+        if theme == 1:
+            self.light()
+        elif theme == 2:
+            self.dark()
 
         global user, passs
         user = StringVar()
@@ -43,6 +50,20 @@ class SampleApp(Tk):
         self._frame = new_frame
         self._frame.pack(anchor='center')
 
+    def dark(self):
+        global bg_color, fg_color, menu_fg
+        bg_color = 'gray10'
+        fg_color = 'hotpink'
+        menu_fg = "snow"
+        self.config(bg='gray10')
+
+    def light(self):
+        global bg_color, fg_color, menu_fg
+        bg_color = 'white'
+        fg_color = 'hotpink'
+        menu_fg = 'black'
+        self.config(bg=bg_color)
+
 
 # -----------------------------------------------------------------------MENU----------------------------------------------------------------
 class UserMenu(Menu):
@@ -54,16 +75,20 @@ class UserMenu(Menu):
                         activebackground='slateblue')
         self.add_cascade(label="Tools", underline=0, menu=fileMenu)
         fileMenu.add_command(label="Login", underline=1, command=lambda: parent.switch_frame(Login_page))
-        fileMenu.add_command(label="Create User Account", underline=1, command=lambda: parent.switch_frame(sign_up_page))
-        fileMenu.add_command(label="Delete User Account", underline=1, command=lambda: parent.switch_frame(Delete_acc))
+        fileMenu.add_command(label="Sign up", underline=1, command=lambda: parent.switch_frame(sign_up_page))
+        fileMenu.add_command(label="Delete Account", underline=1, command=lambda: parent.switch_frame(Delete_acc))
         fileMenu.add_separator()
         fileMenu.add_command(label="Exit", underline=1, command=lambda: parent.destroy())
+
+        def restart_program():
+            python = sys.executable
+            os.execl(python, python, *sys.argv)
 
         def temp_light():
             global theme
             theme = 1
             parent.light()
-            parent.switch_frame(global_type)
+            parent.switch_frame(fa)
 
             # new_frame.pack()
             # msg.showinfo("RESTART", 'Please relogin the Application')
@@ -72,7 +97,19 @@ class UserMenu(Menu):
             global theme
             theme = 2
             parent.dark()
-            parent.switch_frame(global_type)
+            parent.switch_frame(fa)
+            # new_frame.pack()
+
+            # msg.showinfo("RESTART", 'Please relogin the Application')
+
+        fileMenu2 = Menu(self, tearoff=False, bg='white', fg='black', activeforeground='black',
+                         activebackground='slateblue')
+        self.add_cascade(label="Settings", underline=0, menu=fileMenu2)
+        sub_menu = Menu(fileMenu2, tearoff=False, bg='white', fg='black', activeforeground='black',
+                        activebackground='slateblue')
+        sub_menu.add_command(label='Light', underline=1, command=lambda: temp_light())
+        sub_menu.add_command(label='Dark', underline=1, command=lambda: temp_dark())
+        fileMenu2.add_cascade(label="Theme", underline=0, menu=sub_menu)
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -82,18 +119,21 @@ class Login_page(Frame, Menu):
 
     def __init__(self, master):
         Frame.__init__(self, master)
+        self.config(bg=bg_color)
 
-        global global_type
-        global_type = Login_page
+        global fa
+        fa = Login_page
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel')
+        Style1.configure('TLabel', background=bg_color, foreground=fg_color)
+        Style2 = ttk.Style().configure('login.TLabel', background=bg_color, foreground=fg_color,
+                                       font='Helvetica 30 bold')
 
         global user, passs
         user = StringVar()
         passs = StringVar()
 
-        frame1 = Frame(self)
+        frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
 
 
@@ -101,7 +141,7 @@ class Login_page(Frame, Menu):
         ttk.Label(frame1,).grid(row=0, column=0, pady=(150, 5))
         ttk.Label(frame1, text='LOGIN', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
-        frame3 = Frame(self)
+        frame3 = Frame(self, bg=bg_color)
         frame3.grid(row=1, column=0)
         ttk.Label(frame3, text='USERNAME', style='TLabel').grid(row=1, column=0, pady=(50, 10))
         ttk.Label(frame3, text='PASSWORD ', style='TLabel').grid(row=2, column=0, )
@@ -128,9 +168,9 @@ class Login_page(Frame, Menu):
         b.grid(row=2, column=3)
 
         style = ttk.Style()
-        style.configure('a.TButton', borderwidth=10)
+        style.configure('a.TButton', background=fg_color, borderwidth=10)
 
-        frame2 = Frame(self)
+        frame2 = Frame(self, bg=bg_color)
         frame2.grid(row=2, column=0, pady=20)
         ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(sign_up_page), style='a.TButton').pack(
             side=LEFT, padx=8)
@@ -158,28 +198,28 @@ class sign_up_page(Frame):
 
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
-        global global_type
-        global_type = sign_up_page
+        Frame.configure(self, bg=bg_color)
+        global fa
+        fa = sign_up_page
 
         global newuser, newpasss
         newuser = StringVar()
         newpasss = StringVar()
 
-        frame1 = Frame(self)
+        frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
-        frame = Frame(self).grid(row=0, column=2)
+        frame = Frame(self, bg=bg_color).grid(row=0, column=2)
         style = ttk.Style()
-        style.configure('TButton', borderwidth=10)
+        style.configure('TButton', background='slateblue', borderwidth=10)
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel')
+        Style1.configure('TLabel', background=bg_color, foreground='slateblue')
 
 
         ttk.Label(frame1).grid(row=0, column=0, pady=(150, 5))
-        ttk.Label(frame1, text='CREATE USER ACCOUNT', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
+        ttk.Label(frame1, text='SIGN UP', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
-        frame3 = Frame(self)
+        frame3 = Frame(self, bg=bg_color)
         frame3.grid(row=1, column=0)
         ttk.Label(frame3, text='NEW USERNAME', style='TLabel').grid(row=1, column=0, pady=(50, 10))
         ttk.Label(frame3, text='NEW PASSWORD ', style='TLabel').grid(row=2, column=0, )
@@ -201,7 +241,7 @@ class sign_up_page(Frame):
         b = Button(frame3, text='S', command=lambda: view_pass(self.x), bd=0)
         b.grid(row=2, column=3)
 
-        frame2 = Frame(self)
+        frame2 = Frame(self, bg=bg_color)
         frame2.grid(row=2, column=0, pady=20)
         ttk.Button(frame2, text='Sign Up', command=lambda: self.sign_up(master), style='TButton').grid(row=0, column=0)
         ttk.Button(frame2, text='Back', command=lambda: master.switch_frame(Login_page), style='TButton').grid(row=0,
@@ -210,9 +250,10 @@ class sign_up_page(Frame):
 
     def sign_up(self, master):
         if newuser.get() == '' or len(newpasss.get()) < 8:
-            msg.showerror('Invalid User Input',
-                          'Please Enter Valid Username or Password\nMake Sure Password is Greater than 8 Characters')
+            msg.showerror('Invalid Input',
+                          'Please Enter Valid Username or\nPassword must be of 8 digit or More than That')
         else:
+            import tkinter.filedialog as tf
             genwrite_key(newuser.get())
 
             a = encrypt_(newuser.get(), newuser.get())
@@ -228,25 +269,25 @@ class sign_up_page(Frame):
 class Manager_Page(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
 
-        global global_type
-        global_type = Manager_Page
+        global fa
+        fa = Manager_Page
 
         Style2 = ttk.Style()
-        Style2.configure('title.TLabel', font='Helvetica 30 bold')
+        Style2.configure('title.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=10)
+        style.configure('TButton', background='slateblue', borderwidth=10)
 
-        frame = Frame(self)
+        frame = Frame(self, bg=bg_color)
         frame.pack(pady=(50, 0))
 
 
-        title_label = ttk.Label(frame, text='MY PASSWORD VAULT', style='title.TLabel')
+        title_label = ttk.Label(frame, text='PASSWORD MANAGER', style='title.TLabel')
         title_label.grid(row=0, column=1)
 
-        but_frame = Frame(self)
+        but_frame = Frame(self, bg=bg_color)
         but_frame.pack()
 
 
@@ -259,55 +300,56 @@ class Manager_Page(Frame):
                 elif n == 3:
                     master.switch_frame(Change_Pass)
             else:
-                msg.showwarning('You have no accounts to display')
+                msg.showwarning('Nothing to show', 'You haven\'t save any thing')
 
-        but1 = ttk.Button(but_frame, text='Add Account to List', command=lambda: master.switch_frame(Add_Pass))
-        but2 = ttk.Button(but_frame, text='Delete Account in List', command=lambda: Run(2))
-        but3 = ttk.Button(but_frame, text='Edit Account List', command=lambda: Run(3))
-        but4 = ttk.Button(but_frame, text='Display Account List', command=lambda: Run(1))
-        but5 = ttk.Button(but_frame, text='Exit Vault', command=lambda: master.switch_frame(Login_page))
+        but1 = ttk.Button(but_frame, command=lambda: master.switch_frame(Add_Pass))
+        but2 = ttk.Button(but_frame, command=lambda: Run(2))
+        but3 = ttk.Button(but_frame, command=lambda: Run(3))
+        but4 = ttk.Button(but_frame, command=lambda: Run(1))
 
         but1.grid(row=1, column=0, pady=(50, 40), padx=(0, 40))
-        but2.grid(row=1, column=4, pady=(50, 40), padx=(40, 0))
+        but2.grid(row=1, column=1, pady=(50, 40), padx=(40, 0))
         but3.grid(row=2, column=0, pady=(40, 0), padx=(0, 40))
-        but4.grid(row=2, column=4, pady=(40, 0), padx=(40, 0))
-        but5.grid(row=5, column=2, pady=(50, 40), padx=(40,40))
+        but4.grid(row=2, column=1, pady=(40, 0), padx=(40, 0))
 
 
 class Show_Pass(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
         root = self
         self.key = []
         self.value = []
 
-        global global_type
-        global_type = Show_Pass
+        global fa
+        fa = Show_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
 
-        title_frame = Frame(root)
+        title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
-        title_label = ttk.Label(title_frame, text='MY SAVED ACCOUNTS', style='title2.TLabel')
+        title_label = ttk.Label(title_frame, text='VIEW', style='title2.TLabel')
         title_label.grid(row=0, column=1, pady=30)
 
-        root_frame = Frame(root)
+        root_frame = Frame(root, bg=bg_color)
         root_frame.grid(row=1, column=0)
 
         Scrollbar2 = ttk.Scrollbar(root_frame)
-        canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400)
+        # Scrollbar1 = ttk.Scrollbar(root_frame,orient='horizontal')
+        canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400, bg=bg_color)
         canvas.pack(side=LEFT, anchor='nw', fill=BOTH, padx=(10, 0), pady=10)
 
+        # Scrollbar1.pack(side=BOTTOM, fill=X)
         Scrollbar2.pack(side=LEFT, fill=Y, pady=10)
+        # Scrollbar1.config(command=canvas.xview)
         Scrollbar2.config(command=canvas.yview)
 
-        main_frame = Frame(canvas)
+        main_frame = Frame(canvas, bg=bg_color)
         main_frame.config(padx=10)
-        main_frame2 = Frame(canvas)
+        main_frame2 = Frame(canvas, bg=bg_color)
         main_frame2.config(padx=10)
         canvas.create_window(0, 0, window=main_frame, anchor='nw')
         with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
@@ -318,65 +360,83 @@ class Show_Pass(Frame):
             self.value.append(v)
 
         style = ttk.Style()
-        style.configure('TLabel', font='Helvetica 10 ')
+        style.configure('TLabel', background=bg_color, foreground=fg_color, font='Helvetica 10 ')
         style1 = ttk.Style()
-        style1.configure('title.TLabel', font='Helvetica 11 bold')
+        style1.configure('title.TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
 
+        ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
+        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70),
+                                                                                  pady=(0, 15))
         # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
-        ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=3, padx=(10, 44), pady=(0, 15))
-        ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=4, padx=(20, 0), pady=(0, 15))
+        ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
+        ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(20, 0), pady=(0, 15))
 
         for i in range(0, len(self.dic)):
             ttk.Label(main_frame, text=f'{i + 1}]').grid(row=i + 1, column=1, pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2, padx=(10, 40), pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][0], user.get())}',style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][1], user.get())}', style='TLabel').grid(row=i + 1,column=4,padx=(0, 30),pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2,
+                                                                                                    padx=(10, 40),
+                                                                                                    pady=(15, 0))
+            ttk.Label(main_frame,
+                      text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
+                      style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
+            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1,
+                                                                                                         column=4,
+                                                                                                         padx=(0, 30),
+                                                                                                         pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1,
+                                                                                                         column=5,
+                                                                                                         padx=(10, 0),
+                                                                                                         pady=(15, 0))
 
         def back(master):
             master.switch_frame(Manager_Page)
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=5)
+        style.configure('TButton', background='slateblue', borderwidth=5)
 
         ttk.Button(root, text='Back', command=lambda: back(master), style='TButton').grid(row=2, column=0)
 
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
 
+        # return main_frame,self.dic,root
+
+
 class Delete_Pass(Show_Pass):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
         root = self
         key = []
         value = []
 
-        global global_type
-        global_type = Delete_Pass
+        global fa
+        fa = Delete_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
 
-        title_frame = Frame(root)
+        title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
         title_label = ttk.Label(title_frame, text='DELETE', style='title2.TLabel')
         title_label.grid(row=0, column=1, pady=30)
 
-        root_frame = Frame(root)
+        root_frame = Frame(root, bg=bg_color)
         root_frame.grid(row=1, column=0)
 
         Scrollbar2 = ttk.Scrollbar(root_frame)
-        canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400)
+        canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400, bg=bg_color)
         canvas.pack(side=LEFT, anchor='nw', fill=Y, padx=(10, 0), pady=10)
 
         Scrollbar2.pack(side=LEFT, fill=Y, pady=10)
         Scrollbar2.config(command=canvas.yview)
 
-        main_frame = Frame(canvas)
+        main_frame = Frame(canvas, bg=bg_color)
         main_frame.config(padx=10)
-        main_frame2 = Frame(canvas)
+        main_frame2 = Frame(canvas, bg=bg_color)
         main_frame2.config(padx=10)
         canvas.create_window(0, 0, window=main_frame, anchor='nw')
         with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
@@ -387,25 +447,38 @@ class Delete_Pass(Show_Pass):
             value.append(v)
 
         style = ttk.Style()
-        style.configure('TLabel', font='Helvetica 10')
+        style.configure('TLabel', background=bg_color, foreground=fg_color, font='Helvetica 10')
         style1 = ttk.Style()
-        style1.configure('title.TLabel', font='Helvetica 11 bold')
+        style1.configure('title.TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
 
-        ttk.Label(main_frame, text=f'URL', style='title.TLabel').grid(row=0, column=1, padx=(0, 50), pady=(0, 15))
-        ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=3, padx=(10, 44), pady=(0, 15))
-        ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=4, padx=(0, 0), pady=(0, 15))
+        ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=1, padx=(0, 50), pady=(0, 15))
+        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=2, padx=(0, 70),
+                                                                                  pady=(0, 15))
+        # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
+        ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
+        ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(0, 0), pady=(0, 15))
 
         for i in range(0, len(self.dic)):
-            ttk.Label(main_frame, text=f'{decrypt_(key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2,padx=(0, 40),pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(value[i][0], user.get())}',style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(value[i][1], user.get())}', style='TLabel').grid(row=i + 1, column=4,padx=(0, 30),pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(key[i], user.get())}', style='TLabel').grid(row=i + 1, column=1,
+                                                                                               padx=(0, 40),
+                                                                                               pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(value[i][0], user.get())}\n{decrypt_(value[i][1], user.get())}',
+                      style='TLabel').grid(row=i + 1, column=2, padx=(0, 50), pady=(25, 0))
+            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
+            ttk.Label(main_frame, text=f'{decrypt_(value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4,
+                                                                                                    padx=(0, 30),
+                                                                                                    pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5,
+                                                                                                    padx=(0, 0),
+                                                                                                    pady=(15, 0))
 
         Checkbutton_style = ttk.Style()
-        Checkbutton_style.configure('checkbutton.TCheckbutton')
+        Checkbutton_style.configure('checkbutton.TCheckbutton', background=bg_color, foreground=fg_color, )
         for i in range(0, len(self.dic)):
             globals()['checkbutton%s' % i] = IntVar()
-            ttk.Checkbutton(main_frame, style='checkbutton.TCheckbutton', variable=globals()['checkbutton%s' % i], onvalue=i + 1, offvalue=0).grid(row=i + 1, column=0, padx=10, pady=(15, 0))
-        but_frame = Frame(root)
+            ttk.Checkbutton(main_frame, style='checkbutton.TCheckbutton', variable=globals()['checkbutton%s' % i],
+                            onvalue=i + 1, offvalue=0).grid(row=i + 1, column=0, padx=10, pady=(15, 0))
+        but_frame = Frame(root, bg=bg_color)
         but_frame.grid(row=2, column=0)
 
         def back(master):
@@ -428,7 +501,7 @@ class Delete_Pass(Show_Pass):
             master.switch_frame(Manager_Page)
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=0)
+        style.configure('TButton', background='slateblue', borderwidth=0)
 
         b1 = ttk.Button(but_frame, text='Delete', command=lambda: delete(self, master), style='TButton')
         b1.grid(row=0, column=0, padx=(0, 100))
@@ -437,44 +510,63 @@ class Delete_Pass(Show_Pass):
 
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
+        # def back(master):
+        #         master.switch_frame(Manager_Page)
+        # back(master)
 
 
 class Add_Pass(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
 
-        global global_type
-        global_type = Add_Pass
+        global fa
+        fa = Add_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
-        title_frame = Frame(self)
+        title_frame = Frame(self, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
         add = ttk.Label(title_frame, text='ADD', style='title2.TLabel')
         add.grid(row=0, column=1, pady=30)
 
         self.type = StringVar()
+        self.email = StringVar()
+        self.phone_num = StringVar()
         self.username = StringVar()
         self.password = StringVar()
 
         self.type.set('')
+        self.email.set('')
+        self.phone_num.set('')
         self.username.set('')
         self.password.set('')
 
-        Label_Frame = Frame(self)
+        Label_Frame = Frame(self, bg=bg_color)
         Label_Frame.grid(row=1, column=0, padx=(0, 200))
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel', font='Helvetica 11 bold')
+        Style1.configure('TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
         i = 1
 
         type_label = ttk.Label(Label_Frame, text=f'{i}] Type:', style="TLabel")
         type_label.grid(row=0, column=0, padx=10, pady=20)
         type_Entry = ttk.Entry(Label_Frame, textvariable=self.type, width=30)
         type_Entry.grid(row=0, column=1, padx=10, pady=10)
+        i += 1
+
+        email_label = ttk.Label(Label_Frame, text=f'{i}] Email:', style="TLabel")
+        email_label.grid(row=1, column=0, padx=10, pady=20)
+        email_Entry = ttk.Entry(Label_Frame, textvariable=self.email, width=30)
+        email_Entry.grid(row=1, column=1, padx=10, pady=10)
+        i += 1
+
+        phone_num_label = ttk.Label(Label_Frame, text=f'{i}] Phone No.:', style="TLabel")
+        phone_num_label.grid(row=2, column=0, padx=10, pady=20)
+        phone_num_Entry = ttk.Entry(Label_Frame, textvariable=self.phone_num, width=30)
+        phone_num_Entry.grid(row=2, column=1, padx=10, pady=10)
         i += 1
 
         username_label = ttk.Label(Label_Frame, text=f'{i}] Username:', style="TLabel")
@@ -505,66 +597,116 @@ class Add_Pass(Frame):
         b = Button(Label_Frame, text='Show', command=lambda: view_pass(self.x), bd=0)
         b.grid(row=4, column=2)
 
-        but_frame = Frame(self)
+        but_frame = Frame(self, bg=bg_color)
         but_frame.grid(row=2, column=0, pady=20)
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=0)
+        style.configure('TButton', background=fg_color, borderwidth=0)
 
         def clear(self):
             self.type.set('')
+            self.email.set('')
+            self.phone_num.set('')
             self.username.set('')
             self.password.set('')
 
         def back(master):
-            master.switch_frame(Manager_Page)
+            choics = msg.askquestion('Confoirm', 'Do you really want to Go Back')
+            if choics == 'yes':
+                master.switch_frame(Manager_Page)
+            else:
+                pass
 
         def add(self, master):
             if self.type.get() == '' or self.password.get() == '':
                 msg.showerror('Wrong Input', 'Please Add Password or its Type')
             else:
-                self.dic = {}
-                list_ = [encrypt_(self.username.get(), user.get()),
-                        encrypt_(self.password.get(), user.get())]
+                if self.phone_num.get() == '':
+                    self.phone_num.set('---')
+                    if self.email.get() == '':
+                        self.email.set('---')
 
-                if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
-                  with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
-                        self.dic = pickle.load(f)
-                  self.dic[encrypt_(self.type.get(), user.get())] = list_
-                  with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
-                    pickle.dump(self.dic, f)
-                  msg.showinfo('Sucess', 'Your data has been saved')
-                  master.switch_frame(Manager_Page)
+                    if self.username.get() == '':
+                        self.username.set('---')
 
-        ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0,column=0, padx=10)
-        ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0, column=1, padx=10)
-        ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
+                    self.dic = {}
+                    list_ = [encrypt_(self.email.get(), user.get()),
+                             encrypt_(self.phone_num.get(), user.get()),
+                             encrypt_(self.username.get(), user.get()),
+                             encrypt_(self.password.get(), user.get())]
+
+                    if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
+                        with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
+                            self.dic = pickle.load(f)
+                    self.dic[encrypt_(self.type.get(), user.get())] = list_
+                    with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
+                        pickle.dump(self.dic, f)
+                    msg.showinfo('Add Sucessfull', 'Your Password data has been added')
+                    master.switch_frame(Manager_Page)
+                else:
+                    try:
+                        val = int(self.phone_num.get())
+                        if self.email.get() == '':
+                            self.email.set('---')
+
+                        if self.username.get() == '':
+                            self.username.set('---')
+
+                        self.dic = {}
+                        list_ = [encrypt_(self.email.get(), user.get()),
+                                 encrypt_(self.phone_num.get(), user.get()),
+                                 encrypt_(self.username.get(), user.get()),
+                                 encrypt_(self.password.get(), user.get())]
+
+                        if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
+                            with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
+                                self.dic = pickle.load(f)
+                        self.dic[encrypt_(self.type.get(), user.get())] = list_
+                        with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
+                            pickle.dump(self.dic, f)
+                        msg.showinfo('Add Sucessfull', 'Your Password data has been added')
+                        master.switch_frame(Manager_Page)
+
+                    except ValueError:
+                        msg.showerror('Wrong input', 'Please Add valid Phone no')
+
+        save_but = ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0,
+                                                                                                               column=0,
+                                                                                                               padx=10)
+        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,
+                                                                                                               column=1,
+                                                                                                               padx=10)
+        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0,
+                                                                                                          column=2,
+                                                                                                          padx=10)
+
 
 class Change_Pass(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
         root = self
         self.key = []
         self.value = []
 
-        global global_type
-        global_type = Change_Pass
+        global fa
+        fa = Change_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
-        title_frame = Frame(root)
+        title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
         title_label = ttk.Label(title_frame, text='CHANGE', style='title2.TLabel')
         title_label.grid(row=0, column=1, pady=30)
 
-        root_frame = Frame(root)
+        root_frame = Frame(root, bg=bg_color)
         root_frame.grid(row=1, column=0)
 
         Scrollbar2 = ttk.Scrollbar(root_frame)
-        canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400)
+        # Scrollbar1 = ttk.Scrollbar(root_frame,orient='horizontal')
+        canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400, bg=bg_color)
         canvas.pack(side=LEFT, anchor='nw', fill=BOTH, padx=(10, 0), pady=10)
 
         # Scrollbar1.pack(side=BOTTOM, fill=X)
@@ -572,9 +714,9 @@ class Change_Pass(Frame):
         # Scrollbar1.config(command=canvas.xview)
         Scrollbar2.config(command=canvas.yview)
 
-        main_frame = Frame(canvas)
+        main_frame = Frame(canvas, bg=bg_color)
         main_frame.config(padx=10)
-        main_frame2 = Frame(canvas)
+        main_frame2 = Frame(canvas, bg=bg_color)
         main_frame2.config(padx=10)
         canvas.create_window(0, 0, window=main_frame, anchor='nw')
         with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
@@ -585,23 +727,37 @@ class Change_Pass(Frame):
             self.value.append(v)
 
         style = ttk.Style()
-        style.configure('TLabel', font='Helvetica 10 ')
+        style.configure('TLabel', background=bg_color, foreground=fg_color, font='Helvetica 10 ')
         style1 = ttk.Style()
-        style1.configure('title.TLabel', font='Helvetica 11 bold')
+        style1.configure('title.TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
 
-        ttk.Label(main_frame, text=f'URL', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
+        ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
+        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70),
+                                                                                  pady=(0, 15))
+        # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(0, 0), pady=(0, 15))
 
         for i in range(0, len(self.dic)):
-            ttk.Label(main_frame, text=f' {decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2, padx=(10, 40), pady=(15, 0))
-            ttk.Label(main_frame,text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
-
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(0, 0), pady=(15, 0))
+            ttk.Label(main_frame, text=f' {decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1,
+                                                                                                     column=2,
+                                                                                                     padx=(10, 40),
+                                                                                                     pady=(15, 0))
+            ttk.Label(main_frame,
+                      text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
+                      style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
+            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1,
+                                                                                                         column=4,
+                                                                                                         padx=(0, 30),
+                                                                                                         pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1,
+                                                                                                         column=5,
+                                                                                                         padx=(0, 0),
+                                                                                                         pady=(15, 0))
 
         Checkbutton_style = ttk.Style()
-        Checkbutton_style.configure('checkbutton.TCheckbutton')
+        Checkbutton_style.configure('checkbutton.TCheckbutton', background=bg_color, foreground=fg_color, )
         global change_item
         change_item = IntVar()
         for i in range(0, len(self.dic)):
@@ -618,17 +774,18 @@ class Change_Pass(Frame):
                     c = change_item.get()
                     master.switch_frame(Change_pass_label)
 
-        but_frame = Frame(root)
+        but_frame = Frame(root, bg=bg_color)
         but_frame.grid(row=2, column=0)
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=5)
+        style.configure('TButton', background='slateblue', borderwidth=5)
 
         def back(master):
             master.switch_frame(Manager_Page)
 
         ttk.Button(but_frame, text='Change', command=lambda: change(), style='TButton').grid(row=0, column=0)
-        ttk.Button(but_frame, text='Back', command=lambda: back(master), style='TButton').grid(row=0, column=1,padx=(10, 0))
+        ttk.Button(but_frame, text='Back', command=lambda: back(master), style='TButton').grid(row=0, column=1,
+                                                                                               padx=(10, 0))
 
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
@@ -637,12 +794,12 @@ class Change_Pass(Frame):
 class Change_pass_label(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
         self.key = []
         self.value = []
 
         global fa
-        global_type = Change_pass_label
+        fa = Change_pass_label
 
         with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
             self.dic = pickle.load(f)
@@ -652,32 +809,48 @@ class Change_pass_label(Frame):
             self.value.append(v)
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
-        title_frame = Frame(self)
+        title_frame = Frame(self, bg=bg_color)
         title_frame.grid(row=0, column=0)
         add = ttk.Label(title_frame, text='CHANGE', style='title2.TLabel')
         add.grid(row=0, column=1, pady=30)
 
         self.type = StringVar()
+        self.email = StringVar()
+        self.phone_num = StringVar()
         self.username = StringVar()
         self.password = StringVar()
 
         self.type.set(decrypt_(self.key[c], user.get()))
+        self.email.set(decrypt_(self.value[c][0], user.get()))
+        self.phone_num.set(decrypt_(self.value[c][1], user.get()))
         self.username.set(decrypt_(self.value[c][2], user.get()))
         self.password.set(decrypt_(self.value[c][3], user.get()))
 
-        Label_Frame = Frame(self)
+        Label_Frame = Frame(self, bg=bg_color)
         Label_Frame.grid(row=1, column=0, padx=(0, 200))
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel', font='Helvetica 11 bold')
+        Style1.configure('TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
         i = 1
 
         type_label = ttk.Label(Label_Frame, text=f'{i}] Type:', style="TLabel")
         type_label.grid(row=0, column=0, padx=10, pady=20)
         type_Entry = ttk.Entry(Label_Frame, textvariable=self.type, width=30)
         type_Entry.grid(row=0, column=1, padx=10, pady=10)
+        i += 1
+
+        email_label = ttk.Label(Label_Frame, text=f'{i}] Email:', style="TLabel")
+        email_label.grid(row=1, column=0, padx=10, pady=20)
+        email_Entry = ttk.Entry(Label_Frame, textvariable=self.email, width=30)
+        email_Entry.grid(row=1, column=1, padx=10, pady=10)
+        i += 1
+
+        phone_num_label = ttk.Label(Label_Frame, text=f'{i}] Phone No.:', style="TLabel")
+        phone_num_label.grid(row=2, column=0, padx=10, pady=20)
+        phone_num_Entry = ttk.Entry(Label_Frame, textvariable=self.phone_num, width=30)
+        phone_num_Entry.grid(row=2, column=1, padx=10, pady=10)
         i += 1
 
         username_label = ttk.Label(Label_Frame, text=f'{i}] Username:', style="TLabel")
@@ -712,8 +885,18 @@ class Change_pass_label(Frame):
             if self.type.get() == '' or self.password.get() == '':
                 msg.showerror('', 'Please Add Password or its Type')
             else:
+                if self.phone_num.get() == '' or self.phone_num.get() == '---':
+                    self.phone_num.set('---')
 
-                    list_ = [encrypt_(self.username.get(), user.get()),
+                    if self.email.get() == '':
+                        self.email.set('---')
+
+                    if self.username.get() == '':
+                        self.username.set('---')
+
+                    list_ = [encrypt_(self.email.get(), user.get()),
+                             encrypt_(self.phone_num.get(), user.get()),
+                             encrypt_(self.username.get(), user.get()),
                              encrypt_(self.password.get(), user.get())]
 
                     if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
@@ -726,46 +909,84 @@ class Change_pass_label(Frame):
                         pickle.dump(self.dic, f)
                     msg.showinfo('Add Sucessfull', 'Your Password data has been added')
                     master.switch_frame(Manager_Page)
+                else:
+                    try:
+                        val = int(self.phone_num.get())
+                        if self.email.get() == '':
+                            self.email.set('---')
+
+                        if self.username.get() == '':
+                            self.username.set('---')
+
+                        list_ = [encrypt_(self.email.get(), user.get()),
+                                 encrypt_(self.phone_num.get(), user.get()),
+                                 encrypt_(self.username.get(), user.get()),
+                                 encrypt_(self.password.get(), user.get())]
+                        if os.path.isfile(f'data/pass data/{user.get()}_pass.p'):
+                            with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
+                                self.dic = pickle.load(f)
+                        self.dic.pop(self.key[c])
+
+                        self.dic[encrypt_(self.type.get(), user.get())] = list_
+                        with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
+                            pickle.dump(self.dic, f)
+
+                        msg.showinfo('Add Sucessfull', 'Your Password data has been added')
+                        master.switch_frame(Manager_Page)
+                    except ValueError:
+                        msg.showerror('Wrong input', 'Please Add valid Phone no')
 
         def back(master):
             master.switch_frame(Change_Pass)
 
         def clear(self):
             self.type.set('')
+            self.email.set('')
+            self.phone_num.set('')
             self.username.set('')
             self.password.set('')
 
-        but_frame = Frame(self)
+        but_frame = Frame(self, bg=bg_color)
         but_frame.grid(row=2, column=0, pady=20)
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=0)
+        style.configure('TButton', background=fg_color, borderwidth=0)
 
-        ttk.Button(but_frame, text='Save Change', style='TButton', command=lambda: change()).grid(row=0, column=0, padx=10)
-        ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0, column=1, padx=10)
-        ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
+        save_but = ttk.Button(but_frame, text='Save Change', style='TButton', command=lambda: change()).grid(row=0,
+                                                                                                             column=0,
+                                                                                                             padx=10)
+        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,
+                                                                                                               column=1,
+                                                                                                               padx=10)
+        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0,
+                                                                                                          column=2,
+                                                                                                          padx=10)
 
 class Delete_acc(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        Frame.configure(self)
+        Frame.configure(self, bg=bg_color)
 
-        global_type = Delete_acc
+        global fa
+        fa = Delete_acc
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel')
+        Style1.configure('TLabel', background=bg_color, foreground=fg_color)
+        Style2 = ttk.Style().configure('login.TLabel', background=bg_color, foreground=fg_color,
+                                       font='Helvetica 30 bold')
 
         global user, passs
         user = StringVar()
         passs = StringVar()
 
-        frame1 = Frame(self)
+        frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
 
         ttk.Label(frame1).grid(row=0, column=0, pady=(100, 10))
-        ttk.Label(frame1, text='Delete Account', style='login.TLabel').grid(row=0, column=1, pady=(100, 10), padx=(8, 0))
+        ttk.Label(frame1, text='Delete Account', style='login.TLabel').grid(row=0, column=1, pady=(100, 10),
+                                                                            padx=(8, 0))
 
-        frame3 = Frame(self)
+        frame3 = Frame(self, bg=bg_color)
         frame3.grid(row=1, column=0)
         ttk.Label(frame3, text='USERNAME', style='TLabel').grid(row=1, column=0, pady=(50, 10))
         ttk.Label(frame3, text='PASSWORD ', style='TLabel').grid(row=2, column=0, )
@@ -773,9 +994,9 @@ class Delete_acc(Frame):
         ttk.Entry(frame3, textvariable=passs, width=20).grid(row=2, column=2, padx=(20, 10))
 
         style = ttk.Style()
-        style.configure('TButton', borderwidth=10)
+        style.configure('TButton', background=fg_color, borderwidth=10)
 
-        frame2 = Frame(self)
+        frame2 = Frame(self, bg=bg_color)
         frame2.grid(row=2, column=0, pady=20)
         b1 = ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(sign_up_page), style='TButton')
         b1.grid(row=0, column=0, pady=20, padx=10)
@@ -850,5 +1071,5 @@ if __name__ == "__main__":
     app.mainloop()
 
     f1 = open('data/app data/app_data.p', 'wb')
-    pickle.dump(f1)
+    pickle.dump(theme, f1)
     f1.close()
