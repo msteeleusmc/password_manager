@@ -80,33 +80,21 @@ class UserMenu(Menu):
         fileMenu.add_separator()
         fileMenu.add_command(label="Exit", underline=1, command=lambda: parent.destroy())
 
-        def restart_program():
-            python = sys.executable
-            os.execl(python, python, *sys.argv)
-
         def temp_light():
             global theme
             theme = 1
             parent.light()
             parent.switch_frame(fa)
 
-            # new_frame.pack()
-            # msg.showinfo("RESTART", 'Please relogin the Application')
-
         def temp_dark():
             global theme
             theme = 2
             parent.dark()
             parent.switch_frame(fa)
-            # new_frame.pack()
 
-            # msg.showinfo("RESTART", 'Please relogin the Application')
-
-        fileMenu2 = Menu(self, tearoff=False, bg='white', fg='black', activeforeground='black',
-                         activebackground='slateblue')
+        fileMenu2 = Menu(self, tearoff=False, bg='white', fg='black', activeforeground='black', activebackground='slateblue')
         self.add_cascade(label="Settings", underline=0, menu=fileMenu2)
-        sub_menu = Menu(fileMenu2, tearoff=False, bg='white', fg='black', activeforeground='black',
-                        activebackground='slateblue')
+        sub_menu = Menu(fileMenu2, tearoff=False, bg='white', fg='black', activeforeground='black', activebackground='slateblue')
         sub_menu.add_command(label='Light', underline=1, command=lambda: temp_light())
         sub_menu.add_command(label='Dark', underline=1, command=lambda: temp_dark())
         fileMenu2.add_cascade(label="Theme", underline=0, menu=sub_menu)
@@ -126,8 +114,6 @@ class Login_page(Frame, Menu):
 
         Style1 = ttk.Style()
         Style1.configure('TLabel', background=bg_color, foreground=fg_color)
-        Style2 = ttk.Style().configure('login.TLabel', background=bg_color, foreground=fg_color,
-                                       font='Helvetica 30 bold')
 
         global user, passs
         user = StringVar()
@@ -135,8 +121,6 @@ class Login_page(Frame, Menu):
 
         frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
-
-
 
         ttk.Label(frame1,).grid(row=0, column=0, pady=(150, 5))
         ttk.Label(frame1, text='LOGIN', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
@@ -161,9 +145,6 @@ class Login_page(Frame, Menu):
                 p.config(show='*')
                 self.x = a - 1
 
-
-        # show_style=ttk.Style()
-        # show_style.configure('s.TButton',borderwidth=0,bd=0,background=)
         b = Button(frame3, text='S', command=lambda: view_pass(self.x), width=0, bd=0)
         b.grid(row=2, column=3)
 
@@ -172,8 +153,7 @@ class Login_page(Frame, Menu):
 
         frame2 = Frame(self, bg=bg_color)
         frame2.grid(row=2, column=0, pady=20)
-        ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(sign_up_page), style='a.TButton').pack(
-            side=LEFT, padx=8)
+        ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(sign_up_page), style='a.TButton').pack(side=LEFT, padx=8)
         ttk.Button(frame2, text='Login', command=lambda: self.enter(master), style='a.TButton').pack(side=RIGHT, padx=8)
 
     def enter(self, master):
@@ -208,7 +188,6 @@ class sign_up_page(Frame):
 
         frame1 = Frame(self, bg=bg_color)
         frame1.grid(row=0, column=0)
-        frame = Frame(self, bg=bg_color).grid(row=0, column=2)
         style = ttk.Style()
         style.configure('TButton', background='slateblue', borderwidth=10)
 
@@ -244,16 +223,13 @@ class sign_up_page(Frame):
         frame2 = Frame(self, bg=bg_color)
         frame2.grid(row=2, column=0, pady=20)
         ttk.Button(frame2, text='Sign Up', command=lambda: self.sign_up(master), style='TButton').grid(row=0, column=0)
-        ttk.Button(frame2, text='Back', command=lambda: master.switch_frame(Login_page), style='TButton').grid(row=0,
-                                                                                                               column=1,
-                                                                                                               padx=20)
+        ttk.Button(frame2, text='Back', command=lambda: master.switch_frame(Login_page), style='TButton').grid(row=0, column=1, padx=20)
 
     def sign_up(self, master):
         if newuser.get() == '' or len(newpasss.get()) < 8:
             msg.showerror('Invalid Input',
                           'Please Enter Valid Username or\nPassword must be of 8 digit or More than That')
         else:
-            import tkinter.filedialog as tf
             genwrite_key(newuser.get())
 
             a = encrypt_(newuser.get(), newuser.get())
@@ -327,7 +303,6 @@ class Show_Pass(Frame):
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', background=bg_color, foreground=fg_color, font='Helvetica 30 bold')
 
-
         title_frame = Frame(root, bg=bg_color)
         title_frame.grid(row=0, column=0)
 
@@ -338,13 +313,10 @@ class Show_Pass(Frame):
         root_frame.grid(row=1, column=0)
 
         Scrollbar2 = ttk.Scrollbar(root_frame)
-        # Scrollbar1 = ttk.Scrollbar(root_frame,orient='horizontal')
         canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400, bg=bg_color)
         canvas.pack(side=LEFT, anchor='nw', fill=BOTH, padx=(10, 0), pady=10)
 
-        # Scrollbar1.pack(side=BOTTOM, fill=X)
         Scrollbar2.pack(side=LEFT, fill=Y, pady=10)
-        # Scrollbar1.config(command=canvas.xview)
         Scrollbar2.config(command=canvas.yview)
 
         main_frame = Frame(canvas, bg=bg_color)
@@ -365,29 +337,18 @@ class Show_Pass(Frame):
         style1.configure('title.TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
-        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70),
-                                                                                  pady=(0, 15))
-        # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
+        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70), pady=(0, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(20, 0), pady=(0, 15))
 
         for i in range(0, len(self.dic)):
             ttk.Label(main_frame, text=f'{i + 1}]').grid(row=i + 1, column=1, pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2,
-                                                                                                    padx=(10, 40),
-                                                                                                    pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2, padx=(10, 40), pady=(15, 0))
             ttk.Label(main_frame,
                       text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
                       style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
-            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                         column=4,
-                                                                                                         padx=(0, 30),
-                                                                                                         pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                         column=5,
-                                                                                                         padx=(10, 0),
-                                                                                                         pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(10, 0), pady=(15, 0))
 
         def back(master):
             master.switch_frame(Manager_Page)
@@ -399,8 +360,6 @@ class Show_Pass(Frame):
 
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
-
-        # return main_frame,self.dic,root
 
 
 class Delete_Pass(Show_Pass):
@@ -452,25 +411,16 @@ class Delete_Pass(Show_Pass):
         style1.configure('title.TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=1, padx=(0, 50), pady=(0, 15))
-        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=2, padx=(0, 70),
-                                                                                  pady=(0, 15))
-        # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
+        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=2, padx=(0, 70), pady=(0, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(0, 0), pady=(0, 15))
 
         for i in range(0, len(self.dic)):
-            ttk.Label(main_frame, text=f'{decrypt_(key[i], user.get())}', style='TLabel').grid(row=i + 1, column=1,
-                                                                                               padx=(0, 40),
-                                                                                               pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(key[i], user.get())}', style='TLabel').grid(row=i + 1, column=1, padx=(0, 40), pady=(15, 0))
             ttk.Label(main_frame, text=f'{decrypt_(value[i][0], user.get())}\n{decrypt_(value[i][1], user.get())}',
                       style='TLabel').grid(row=i + 1, column=2, padx=(0, 50), pady=(25, 0))
-            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
-            ttk.Label(main_frame, text=f'{decrypt_(value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4,
-                                                                                                    padx=(0, 30),
-                                                                                                    pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5,
-                                                                                                    padx=(0, 0),
-                                                                                                    pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(0, 0), pady=(15, 0))
 
         Checkbutton_style = ttk.Style()
         Checkbutton_style.configure('checkbutton.TCheckbutton', background=bg_color, foreground=fg_color, )
@@ -510,9 +460,6 @@ class Delete_Pass(Show_Pass):
 
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
-        # def back(master):
-        #         master.switch_frame(Manager_Page)
-        # back(master)
 
 
 class Add_Pass(Frame):
@@ -670,15 +617,9 @@ class Add_Pass(Frame):
                     except ValueError:
                         msg.showerror('Wrong input', 'Please Add valid Phone no')
 
-        save_but = ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0,
-                                                                                                               column=0,
-                                                                                                               padx=10)
-        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,
-                                                                                                               column=1,
-                                                                                                               padx=10)
-        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0,
-                                                                                                          column=2,
-                                                                                                          padx=10)
+        save_but = ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0, column=0, padx=10)
+        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,column=1, padx=10)
+        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
 
 
 class Change_Pass(Frame):
@@ -705,13 +646,11 @@ class Change_Pass(Frame):
         root_frame.grid(row=1, column=0)
 
         Scrollbar2 = ttk.Scrollbar(root_frame)
-        # Scrollbar1 = ttk.Scrollbar(root_frame,orient='horizontal')
+
         canvas = Canvas(root_frame, yscrollcommand=Scrollbar2.set, width=660, height=400, bg=bg_color)
         canvas.pack(side=LEFT, anchor='nw', fill=BOTH, padx=(10, 0), pady=10)
 
-        # Scrollbar1.pack(side=BOTTOM, fill=X)
         Scrollbar2.pack(side=LEFT, fill=Y, pady=10)
-        # Scrollbar1.config(command=canvas.xview)
         Scrollbar2.config(command=canvas.yview)
 
         main_frame = Frame(canvas, bg=bg_color)
@@ -732,37 +671,24 @@ class Change_Pass(Frame):
         style1.configure('title.TLabel', background=bg_color, foreground='slateblue', font='Helvetica 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
-        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70),
-                                                                                  pady=(0, 15))
-        # ttk.Label(main_frame,text=f'PHONE NO.',style='title.TLabel').grid(row=0,column=3,padx=(0,40),pady=(0,15))
+        ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70), pady=(0, 15))
+
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(0, 0), pady=(0, 15))
 
         for i in range(0, len(self.dic)):
-            ttk.Label(main_frame, text=f' {decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                     column=2,
-                                                                                                     padx=(10, 40),
-                                                                                                     pady=(15, 0))
-            ttk.Label(main_frame,
-                      text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
+            ttk.Label(main_frame, text=f' {decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2, padx=(10, 40), pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
                       style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
-            # ttk.Label(main_frame,text=f'{self.value[i][1]}',style='TLabel').grid(row=i+1,column=3,padx=(0,20))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                         column=4,
-                                                                                                         padx=(0, 30),
-                                                                                                         pady=(15, 0))
-            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1,
-                                                                                                         column=5,
-                                                                                                         padx=(0, 0),
-                                                                                                         pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
+            ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(0, 0), pady=(15, 0))
 
         Checkbutton_style = ttk.Style()
         Checkbutton_style.configure('checkbutton.TCheckbutton', background=bg_color, foreground=fg_color, )
         global change_item
         change_item = IntVar()
         for i in range(0, len(self.dic)):
-            ttk.Checkbutton(main_frame, style='checkbutton.TCheckbutton', variable=change_item, onvalue=i,
-                            offvalue=0).grid(row=i + 1, column=0, padx=10, pady=(15, 0))
+            ttk.Checkbutton(main_frame, style='checkbutton.TCheckbutton', variable=change_item, onvalue=i, offvalue=0).grid(row=i + 1, column=0, padx=10, pady=(15, 0))
 
         def back(master):
             master.switch_frame(Manager_Page)
@@ -784,8 +710,7 @@ class Change_Pass(Frame):
             master.switch_frame(Manager_Page)
 
         ttk.Button(but_frame, text='Change', command=lambda: change(), style='TButton').grid(row=0, column=0)
-        ttk.Button(but_frame, text='Back', command=lambda: back(master), style='TButton').grid(row=0, column=1,
-                                                                                               padx=(10, 0))
+        ttk.Button(but_frame, text='Back', command=lambda: back(master), style='TButton').grid(row=0, column=1, padx=(10, 0))
 
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
@@ -952,15 +877,9 @@ class Change_pass_label(Frame):
         style = ttk.Style()
         style.configure('TButton', background=fg_color, borderwidth=0)
 
-        save_but = ttk.Button(but_frame, text='Save Change', style='TButton', command=lambda: change()).grid(row=0,
-                                                                                                             column=0,
-                                                                                                             padx=10)
-        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,
-                                                                                                               column=1,
-                                                                                                               padx=10)
-        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0,
-                                                                                                          column=2,
-                                                                                                          padx=10)
+        save_but = ttk.Button(but_frame, text='Save Change', style='TButton', command=lambda: change()).grid(row=0, column=0, padx=10)
+        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0, column=1, padx=10)
+        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
 
 class Delete_acc(Frame):
     def __init__(self, master):
@@ -972,8 +891,6 @@ class Delete_acc(Frame):
 
         Style1 = ttk.Style()
         Style1.configure('TLabel', background=bg_color, foreground=fg_color)
-        Style2 = ttk.Style().configure('login.TLabel', background=bg_color, foreground=fg_color,
-                                       font='Helvetica 30 bold')
 
         global user, passs
         user = StringVar()
@@ -983,8 +900,7 @@ class Delete_acc(Frame):
         frame1.grid(row=0, column=0)
 
         ttk.Label(frame1).grid(row=0, column=0, pady=(100, 10))
-        ttk.Label(frame1, text='Delete Account', style='login.TLabel').grid(row=0, column=1, pady=(100, 10),
-                                                                            padx=(8, 0))
+        ttk.Label(frame1, text='Delete Account', style='login.TLabel').grid(row=0, column=1, pady=(100, 10), padx=(8, 0))
 
         frame3 = Frame(self, bg=bg_color)
         frame3.grid(row=1, column=0)
