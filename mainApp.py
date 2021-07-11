@@ -850,5 +850,5 @@ if __name__ == "__main__":
     app.mainloop()
 
     f1 = open('data/app data/app_data.p', 'wb')
-    pickle.dump(theme, f1)
+    pickle.dump(f1)
     f1.close()

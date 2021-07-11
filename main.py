@@ -18,7 +18,7 @@ class SampleApp(Tk):
     def __init__(self):
         Tk.__init__(self)
         global theme
-        if os.path.isfile('data/app data/app_data.p'):
+        if os.path.isfile('data/app data/app_data.p') & os.path.getsize('data/app data/app_data.p') > 0:
             f1 = open('data/app data/app_data.p', 'rb')
             theme = pickle.load(f1)
             f1.close()
