@@ -1,19 +1,27 @@
-# ------------------------------------------------------------------All Modules-------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           CSCE 3550 PASSWORD MANAGER PROJECT 1
+#                                                  Name : Michael Steele
+#                                                  Student ID : 11198872
+#                                              Email : MichaelSteele@my.unt.edu
+# -------------------------------------------------------------------------------------------------------------------------------
 
 from tkinter import *
 import tkinter.ttk as ttk
 import tkinter.messagebox as msg
 from cryptography.fernet import Fernet
-from random import *
 import os, pickle
 import hashlib
 
-# -------------------------------------------------------------------GLOBAL------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Global variable used for each GUI page
+# -------------------------------------------------------------------------------------------------------------------------------
 
-fa = None
+global_variable = None
 
-# -------------------------------------------------------------------GUI CLASS-----------------------------------------------------------------
-class SampleApp(Tk):
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Main App Class to set the foundation
+# -------------------------------------------------------------------------------------------------------------------------------
+class MainApp(Tk):
     def __init__(self):
         Tk.__init__(self)
         global theme
@@ -27,16 +35,16 @@ class SampleApp(Tk):
         self.title('Password Manager')
         self.geometry('710x600')
 
-        global user, passs
+        global user, act_pass
         user = StringVar()
-        passs = StringVar()
+        act_pass = StringVar()
         user.set('a')
 
-        menubar = UserMenu(self)
+        menubar = AppFileMenu(self)
         self.config(menu=menubar)
 
         self._frame = None
-        self.switch_frame(Login_page)
+        self.switch_frame(AppLoginPage)
 
     def switch_frame(self, frame_class):
         global new_frame
@@ -46,17 +54,19 @@ class SampleApp(Tk):
         self._frame = new_frame
         self._frame.pack(anchor='center')
 
-# -----------------------------------------------------------------------MENU----------------------------------------------------------------
-class UserMenu(Menu):
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Menu Class used for the file menu
+# -------------------------------------------------------------------------------------------------------------------------------
+class AppFileMenu(Menu):
     def __init__(self, parent):
         Menu.__init__(self, parent)
         global theme
 
         fileMenu = Menu(self, tearoff=False, background='white', fg='black', activeforeground='black', activebackground='slateblue')
         self.add_cascade(label="Tools", underline=0, menu=fileMenu)
-        fileMenu.add_command(label="Login", underline=1, command=lambda: parent.switch_frame(Login_page))
-        fileMenu.add_command(label="Sign up", underline=1, command=lambda: parent.switch_frame(sign_up_page))
-        fileMenu.add_command(label="Delete Account", underline=1, command=lambda: parent.switch_frame(Delete_acc))
+        fileMenu.add_command(label="Login", underline=1, command=lambda: parent.switch_frame(AppLoginPage))
+        fileMenu.add_command(label="Sign up", underline=1, command=lambda: parent.switch_frame(AppSignUpPage))
+        fileMenu.add_command(label="Delete Account", underline=1, command=lambda: parent.switch_frame(DeleteUserAcount))
         fileMenu.add_separator()
         fileMenu.add_command(label="Exit", underline=1, command=lambda: parent.destroy())
 
@@ -64,13 +74,13 @@ class UserMenu(Menu):
             global theme
             theme = 1
             parent.light()
-            parent.switch_frame(fa)
+            parent.switch_frame(global_variable)
 
         def temp_dark():
             global theme
             theme = 2
             parent.dark()
-            parent.switch_frame(fa)
+            parent.switch_frame(global_variable)
 
         fileMenu2 = Menu(self, tearoff=False, background='white', fg='black', activeforeground='black', activebackground='slateblue')
         self.add_cascade(label="Settings", underline=0, menu=fileMenu2)
@@ -80,36 +90,36 @@ class UserMenu(Menu):
         fileMenu2.add_cascade(label="Theme", underline=0, menu=sub_menu)
 
 
-# ---------------------------------------------------------------------------------------------------------------------------------------------
-
-
-class Login_page(Frame, Menu):
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                               Login Page Class
+# -------------------------------------------------------------------------------------------------------------------------------
+class AppLoginPage(Frame, Menu):
 
     def __init__(self, master):
         Frame.__init__(self, master)
 
-        global fa
-        fa = Login_page
+        global global_variable
+        global_variable = AppLoginPage
 
         Style1 = ttk.Style()
         Style1.configure('TLabel')
 
-        global user, passs
+        global user, act_pass
         user = StringVar()
-        passs = StringVar()
+        act_pass = StringVar()
 
         frame1 = Frame(self)
         frame1.grid(row=0, column=0)
 
         ttk.Label(frame1,).grid(row=0, column=0, pady=(150, 5))
-        ttk.Label(frame1, text='LOGIN', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
+        ttk.Label(frame1, text='LOGIN', style='login.TLabel', font='Helvetica 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self)
         frame3.grid(row=1, column=0)
         ttk.Label(frame3, text='USERNAME', style='TLabel').grid(row=1, column=0, pady=(50, 10))
         ttk.Label(frame3, text='PASSWORD ', style='TLabel').grid(row=2, column=0, )
         ttk.Entry(frame3, textvariable=user, width=20).grid(row=1, column=2, pady=(50, 10), padx=(20, 10))
-        p = ttk.Entry(frame3, textvariable=passs, width=20)
+        p = ttk.Entry(frame3, textvariable=act_pass, width=20)
         p.grid(row=2, column=2, padx=(12, 2))
         p.config(show='*')
         self.x = 1
@@ -132,7 +142,7 @@ class Login_page(Frame, Menu):
 
         frame2 = Frame(self)
         frame2.grid(row=2, column=0, pady=20)
-        ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(sign_up_page), style='a.TButton').pack(side=LEFT, padx=8)
+        ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(AppSignUpPage), style='a.TButton').pack(side=LEFT, padx=8)
         ttk.Button(frame2, text='Login', command=lambda: self.enter(master), style='a.TButton').pack(side=RIGHT, padx=8)
 
     def enter(self, master):
@@ -141,29 +151,31 @@ class Login_page(Frame, Menu):
                 listt = pickle.load(f)
             a = decrypt_(listt[0], user.get())
             b = decrypt_(listt[1], user.get())
-            if user.get() == a and passs.get() == b:
-                master.switch_frame(Manager_Page)
+            if user.get() == a and act_pass.get() == b:
+                master.switch_frame(AppUserVault)
             else:
                 msg.showerror('Wrong', "Wrong user or password")
                 user.set('')
-                passs.set('')
+                act_pass.set('')
         else:
             msg.showerror('Wrong', "Wrong user or password")
             user.set('')
-            passs.set('')
+            act_pass.set('')
 
-
-class sign_up_page(Frame):
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Create User Account Class
+# -------------------------------------------------------------------------------------------------------------------------------
+class AppSignUpPage(Frame):
 
     def __init__(self, master):
         Frame.__init__(self, master)
         Frame.configure(self)
-        global fa
-        fa = sign_up_page
+        global global_variable
+        global_variable = AppSignUpPage
 
-        global newuser, newpasss
+        global newuser, newact_pass
         newuser = StringVar()
-        newpasss = StringVar()
+        newact_pass = StringVar()
 
         frame1 = Frame(self)
         frame1.grid(row=0, column=0)
@@ -175,14 +187,14 @@ class sign_up_page(Frame):
 
 
         ttk.Label(frame1).grid(row=0, column=0, pady=(150, 5))
-        ttk.Label(frame1, text='SIGN UP', style='login.TLabel').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
+        ttk.Label(frame1, text='Create User Account', style='login.TLabel', font='Helvetica 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self)
         frame3.grid(row=1, column=0)
         ttk.Label(frame3, text='NEW USERNAME', style='TLabel').grid(row=1, column=0, pady=(50, 10))
         ttk.Label(frame3, text='NEW PASSWORD ', style='TLabel').grid(row=2, column=0, )
         ttk.Entry(frame3, textvariable=newuser, width=20).grid(row=1, column=2, pady=(50, 10), padx=(20, 10))
-        p = ttk.Entry(frame3, textvariable=newpasss, width=20)
+        p = ttk.Entry(frame3, textvariable=newact_pass, width=20)
         p.grid(row=2, column=2, padx=(20, 10))
         p.config(show="*")
         self.x = 1
@@ -202,32 +214,34 @@ class sign_up_page(Frame):
         frame2 = Frame(self)
         frame2.grid(row=2, column=0, pady=20)
         ttk.Button(frame2, text='Sign Up', command=lambda: self.sign_up(master), style='TButton').grid(row=0, column=0)
-        ttk.Button(frame2, text='Back', command=lambda: master.switch_frame(Login_page), style='TButton').grid(row=0, column=1, padx=20)
+        ttk.Button(frame2, text='Back', command=lambda: master.switch_frame(AppLoginPage), style='TButton').grid(row=0, column=1, padx=20)
 
     def sign_up(self, master):
-        if newuser.get() == '' or len(newpasss.get()) < 8:
+        if newuser.get() == '' or len(newact_pass.get()) < 8:
             msg.showerror('Invalid Input',
-                          'Please Enter Valid Username or\nPassword must be of 8 digit or More than That')
+                          'Please Enter Valid Username or\nPassword must 8 characters or more')
         else:
             genwrite_key(newuser.get())
 
             a = encrypt_(newuser.get(), newuser.get())
-            b = encrypt_(newpasss.get(), newuser.get())
+            b = encrypt_(newact_pass.get(), newuser.get())
 
             with open(f'data/user data/{newuser.get()}_pass_file.p', 'wb') as f:
                 pickle.dump([a, b], f)
 
-            msg.showinfo('Account Added Successfull', 'Your Account has been Added\nPlease Login you account to access')
-            master.switch_frame(Login_page)
+            msg.showinfo('Account Added Successfully', 'Your Account has been Added\nPlease Login you account to access')
+            master.switch_frame(AppLoginPage)
 
-
-class Manager_Page(Frame):
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                        Displays User Interface after Login
+# -------------------------------------------------------------------------------------------------------------------------------
+class AppUserVault(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         Frame.configure(self)
 
-        global fa
-        fa = Manager_Page
+        global global_variable
+        global_variable = AppUserVault
 
         Style2 = ttk.Style()
         Style2.configure('title.TLabel', font='Helvetica 30 bold')
@@ -261,7 +275,7 @@ class Manager_Page(Frame):
         but2 = ttk.Button(but_frame, text='Remove Account from Vault', command=lambda: Run(2))
         but3 = ttk.Button(but_frame, text='Edit an Account in Vault', command=lambda: Run(3))
         but4 = ttk.Button(but_frame, text='Show My Accounts', command=lambda: Run(1))
-        but5 = ttk.Button(but_frame, text='Exit', command = lambda: master.switch_frame(Login_page))
+        but5 = ttk.Button(but_frame, text='Exit', command = lambda: master.switch_frame(AppLoginPage))
 
         but1.grid(row=1, column=0, pady=(50, 40), padx=(0, 40))
         but2.grid(row=1, column=2, pady=(50, 40), padx=(40, 0))
@@ -270,6 +284,9 @@ class Manager_Page(Frame):
         but5.grid(row=5, column=1, pady=(50, 40), padx=(40, 40))
 
 
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Display stored account data
+# -------------------------------------------------------------------------------------------------------------------------------
 class Show_Pass(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -278,8 +295,8 @@ class Show_Pass(Frame):
         self.key = []
         self.value = []
 
-        global fa
-        fa = Show_Pass
+        global global_variable
+        global_variable = Show_Pass
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', font='Helvetica 30 bold')
@@ -331,7 +348,7 @@ class Show_Pass(Frame):
                       style='TLabel').grid(row=i + 1, column=5, padx=(0, 30), pady=(15, 0))
 
         def back(master):
-            master.switch_frame(Manager_Page)
+            master.switch_frame(AppUserVault)
 
         style = ttk.Style()
         style.configure('TButton', borderwidth=5)
@@ -342,6 +359,9 @@ class Show_Pass(Frame):
         canvas.config(scrollregion=canvas.bbox("all"))
 
 
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Delete stored account data
+# -------------------------------------------------------------------------------------------------------------------------------
 class Delete_Pass(Show_Pass):
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -350,8 +370,8 @@ class Delete_Pass(Show_Pass):
         key = []
         value = []
 
-        global fa
-        fa = Delete_Pass
+        global global_variable
+        global_variable = Delete_Pass
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', font='Helvetica 30 bold')
@@ -411,7 +431,7 @@ class Delete_Pass(Show_Pass):
         but_frame.grid(row=2, column=0)
 
         def back(master):
-            master.switch_frame(Manager_Page)
+            master.switch_frame(AppUserVault)
 
         def delete(self, master):
             self.delete_list = []
@@ -427,7 +447,7 @@ class Delete_Pass(Show_Pass):
                 msg.showinfo('Deleted Sucessfully', 'Selected  Passwords has been Deleted')
             else:
                 pass
-            master.switch_frame(Manager_Page)
+            master.switch_frame(AppUserVault)
 
         style = ttk.Style()
         style.configure('TButton', background='slateblue', borderwidth=0)
@@ -441,13 +461,16 @@ class Delete_Pass(Show_Pass):
         canvas.config(scrollregion=canvas.bbox("all"))
 
 
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Add an account to the vault
+# -------------------------------------------------------------------------------------------------------------------------------
 class Add_Pass(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         Frame.configure(self)
 
-        global fa
-        fa = Add_Pass
+        global global_variable
+        global_variable = Add_Pass
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', font='Helvetica 30 bold')
@@ -521,7 +544,7 @@ class Add_Pass(Frame):
         def back(master):
             choics = msg.askquestion('Confoirm', 'Do you really want to Go Back')
             if choics == 'yes':
-                master.switch_frame(Manager_Page)
+                master.switch_frame(AppUserVault)
             else:
                 pass
 
@@ -540,7 +563,7 @@ class Add_Pass(Frame):
                 with open(f'data/pass data/{user.get()}_pass.p', 'wb') as f:
                     pickle.dump(self.dic, f)
                 msg.showinfo('Add Sucessfull', 'Your Password data has been added')
-                master.switch_frame(Manager_Page)
+                master.switch_frame(AppUserVault)
 
 
         save_but = ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0, column=0, padx=10)
@@ -548,6 +571,9 @@ class Add_Pass(Frame):
         back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
 
 
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Edit saved account information in vault
+# -------------------------------------------------------------------------------------------------------------------------------
 class Change_Pass(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -556,8 +582,8 @@ class Change_Pass(Frame):
         self.key = []
         self.value = []
 
-        global fa
-        fa = Change_Pass
+        global global_variable
+        global_variable = Change_Pass
 
         Style3 = ttk.Style()
         Style3.configure('title2.TLabel', font='Helvetica 30 bold')
@@ -615,7 +641,7 @@ class Change_Pass(Frame):
             ttk.Checkbutton(main_frame, style='checkbutton.TCheckbutton', variable=change_item, onvalue=i, offvalue=0).grid(row=i + 1, column=0, padx=10, pady=(15, 0))
 
         def back(master):
-            master.switch_frame(Manager_Page)
+            master.switch_frame(AppUserVault)
 
         def change():
             for k, v in self.dic.items():
@@ -631,7 +657,7 @@ class Change_Pass(Frame):
         style.configure('TButton', background='slateblue', borderwidth=5)
 
         def back(master):
-            master.switch_frame(Manager_Page)
+            master.switch_frame(AppUserVault)
 
         ttk.Button(but_frame, text='Change', command=lambda: change(), style='TButton').grid(row=0, column=0)
         ttk.Button(but_frame, text='Back', command=lambda: back(master), style='TButton').grid(row=0, column=1, padx=(10, 0))
@@ -639,7 +665,9 @@ class Change_Pass(Frame):
         root.update()
         canvas.config(scrollregion=canvas.bbox("all"))
 
-
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Works with editing the stored data
+# -------------------------------------------------------------------------------------------------------------------------------
 class Change_pass_label(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -647,8 +675,8 @@ class Change_pass_label(Frame):
         self.key = []
         self.value = []
 
-        global fa
-        fa = Change_pass_label
+        global global_variable
+        global_variable = Change_pass_label
 
         with open(f'data/pass data/{user.get()}_pass.p', 'rb') as f:
             self.dic = pickle.load(f)
@@ -733,7 +761,7 @@ class Change_pass_label(Frame):
                 pickle.dump(self.dic, f)
 
             msg.showinfo('Add Sucessfull', 'Your Password data has been added')
-            master.switch_frame(Manager_Page)
+            master.switch_frame(AppUserVault)
 
         def back(master):
             master.switch_frame(Change_Pass)
@@ -753,20 +781,23 @@ class Change_pass_label(Frame):
         clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0, column=1, padx=10)
         back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
 
-class Delete_acc(Frame):
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Permanetly delete a users account
+# -------------------------------------------------------------------------------------------------------------------------------
+class DeleteUserAcount(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         Frame.configure(self)
 
-        global fa
-        fa = Delete_acc
+        global global_variable
+        global_variable = DeleteUserAcount
 
         Style1 = ttk.Style()
         Style1.configure('TLabel')
 
-        global user, passs
+        global user, act_pass
         user = StringVar()
-        passs = StringVar()
+        act_pass = StringVar()
 
         frame1 = Frame(self)
         frame1.grid(row=0, column=0)
@@ -779,16 +810,16 @@ class Delete_acc(Frame):
         ttk.Label(frame3, text='USERNAME', style='TLabel').grid(row=1, column=0, pady=(50, 10))
         ttk.Label(frame3, text='PASSWORD ', style='TLabel').grid(row=2, column=0, )
         ttk.Entry(frame3, textvariable=user, width=20).grid(row=1, column=2, pady=(50, 10), padx=(20, 10))
-        ttk.Entry(frame3, textvariable=passs, width=20).grid(row=2, column=2, padx=(20, 10))
+        ttk.Entry(frame3, textvariable=act_pass, width=20).grid(row=2, column=2, padx=(20, 10))
 
         style = ttk.Style()
         style.configure('TButton', borderwidth=10)
 
         frame2 = Frame(self)
         frame2.grid(row=2, column=0, pady=20)
-        b1 = ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(sign_up_page), style='TButton')
+        b1 = ttk.Button(frame2, text='Sign Up', command=lambda: master.switch_frame(AppSignUpPage), style='TButton')
         b1.grid(row=0, column=0, pady=20, padx=10)
-        b2 = ttk.Button(frame2, text='Login', command=lambda: master.switch_frame(Login_page), style='TButton')
+        b2 = ttk.Button(frame2, text='Login', command=lambda: master.switch_frame(AppLoginPage), style='TButton')
         b2.grid(row=0, column=1, pady=20, padx=10)
         b3 = ttk.Button(frame2, text='Delete', command=lambda: self.enter(master), style='TButton')
         b3.grid(row=0, column=2, pady=20, padx=10)
@@ -797,17 +828,17 @@ class Delete_acc(Frame):
         if os.path.isfile(f'data/user data/{user.get()}_pass_file.p'):
             with open(f'data/user data/{user.get()}_pass_file.p', 'rb') as f:
                 listt = pickle.load(f)
-            if user.get() == listt[0] and passs.get() == listt[1]:
+            if user.get() == listt[0] and act_pass.get() == listt[1]:
                 self.delete()
-                master.switch_frame(Login_page)
+                master.switch_frame(AppLoginPage)
             else:
                 msg.showerror('Wrong', "Wrong user or password")
                 user.set('')
-                passs.set('')
+                act_pass.set('')
         else:
             msg.showerror('Wrong', "Wrong user or password")
             user.set('')
-            passs.set('')
+            act_pass.set('')
 
     def delete(self):
         os.remove(f'data/user data/{user.get()}_pass_file.p')
@@ -815,9 +846,9 @@ class Delete_acc(Frame):
             os.remove(f'data/pass data/{user.get()}_pass.p')
 
 
-# ------------------------------------------------------------------GLOBAL FUNCTIONS-----------------------------------------------------------
-
-
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Global functions for all classes to use
+# -------------------------------------------------------------------------------------------------------------------------------
 def genwrite_key(username):
     key = Fernet.generate_key()
     with open(f"data/key/{username}.key", "wb") as key_file:
@@ -849,11 +880,11 @@ def decrypt_(msg, user):
     decoded_slogan = decoded_slogan.decode('utf-8')
     return decoded_slogan
 
-
-# -----------------------------------------------------------------------MAIN------------------------------------------------------------------
-
+# -------------------------------------------------------------------------------------------------------------------------------
+#                                           Executes Main Program, starts with MainApp()
+# -------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    app = SampleApp()
+    app = MainApp()
     app.mainloop()
 
     f1 = open('data/app data/app_data.p', 'wb')
