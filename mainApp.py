@@ -124,7 +124,7 @@ class Login_page(Frame, Menu):
                 p.config(show='*')
                 self.x = a - 1
 
-        b = Button(frame3, text='S', command=lambda: view_pass(self.x), width=0, bd=0)
+        b = Button(frame3, text='Show Password', command=lambda: view_pass(self.x), width=0, bd=0)
         b.grid(row=2, column=3)
 
         style = ttk.Style()
@@ -184,8 +184,8 @@ class sign_up_page(Frame):
         ttk.Entry(frame3, textvariable=newuser, width=20).grid(row=1, column=2, pady=(50, 10), padx=(20, 10))
         p = ttk.Entry(frame3, textvariable=newpasss, width=20)
         p.grid(row=2, column=2, padx=(20, 10))
-        p.config(show="")
-        self.x = 2
+        p.config(show="*")
+        self.x = 1
 
         def view_pass(a):
             if a == 1:  # p.configure(show='*'):
@@ -196,7 +196,7 @@ class sign_up_page(Frame):
                 p.config(show='*')
                 self.x = a - 1
 
-        b = Button(frame3, text='S', command=lambda: view_pass(self.x), bd=0)
+        b = Button(frame3, text='Show Password', command=lambda: view_pass(self.x), bd=0)
         b.grid(row=2, column=3)
 
         frame2 = Frame(self)
@@ -257,15 +257,17 @@ class Manager_Page(Frame):
             else:
                 msg.showwarning('Nothing to show', 'You haven\'t save any thing')
 
-        but1 = ttk.Button(but_frame, command=lambda: master.switch_frame(Add_Pass))
-        but2 = ttk.Button(but_frame, command=lambda: Run(2))
-        but3 = ttk.Button(but_frame, command=lambda: Run(3))
-        but4 = ttk.Button(but_frame, command=lambda: Run(1))
+        but1 = ttk.Button(but_frame, text='Add Account to Vault', command=lambda: master.switch_frame(Add_Pass))
+        but2 = ttk.Button(but_frame, text='Remove Account from Vault', command=lambda: Run(2))
+        but3 = ttk.Button(but_frame, text='Edit an Account in Vault', command=lambda: Run(3))
+        but4 = ttk.Button(but_frame, text='Show My Accounts', command=lambda: Run(1))
+        but5 = ttk.Button(but_frame, text='Exit', command = lambda: master.switch_frame(Login_page))
 
         but1.grid(row=1, column=0, pady=(50, 40), padx=(0, 40))
-        but2.grid(row=1, column=1, pady=(50, 40), padx=(40, 0))
+        but2.grid(row=1, column=2, pady=(50, 40), padx=(40, 0))
         but3.grid(row=2, column=0, pady=(40, 0), padx=(0, 40))
-        but4.grid(row=2, column=1, pady=(40, 0), padx=(40, 0))
+        but4.grid(row=2, column=2, pady=(40, 0), padx=(40, 0))
+        but5.grid(row=5, column=1, pady=(50, 40), padx=(40, 40))
 
 
 class Show_Pass(Frame):
@@ -316,7 +318,6 @@ class Show_Pass(Frame):
         style1.configure('title.TLabel', font='Helvetica 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(0, 15))
-        #ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70), pady=(0, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(20, 0), pady=(0, 15))
 
@@ -328,18 +329,12 @@ class Show_Pass(Frame):
                       style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
             ttk.Label(main_frame, text=f'{decrypt_(self.value[i][1], user.get())}',
                       style='TLabel').grid(row=i + 1, column=5, padx=(0, 30), pady=(15, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(self.key[i], user.get())}', style='TLabel').grid(row=i + 1, column=2, padx=(10, 40), pady=(15, 0))
-            #ttk.Label(main_frame,
-            #          text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
-            #          style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(10, 0), pady=(15, 0))
 
         def back(master):
             master.switch_frame(Manager_Page)
 
         style = ttk.Style()
-        style.configure('TButton', background='slateblue', borderwidth=5)
+        style.configure('TButton', borderwidth=5)
 
         ttk.Button(root, text='Back', command=lambda: back(master), style='TButton').grid(row=2, column=0)
 
@@ -396,7 +391,6 @@ class Delete_Pass(Show_Pass):
         style1.configure('title.TLabel', font='Helvetica 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=1, padx=(0, 50), pady=(0, 15))
-        #ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=2, padx=(0, 70), pady=(0, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(0, 0), pady=(0, 15))
 
@@ -406,10 +400,6 @@ class Delete_Pass(Show_Pass):
                       style='TLabel').grid(row=i + 1, column=4,padx=(0, 30), pady=(15, 0))
             ttk.Label(main_frame, text=f'{decrypt_(value[i][1], user.get())}',
                       style='TLabel').grid(row=i + 1, column=5, padx=(0, 0), pady=(15, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(value[i][0], user.get())}\n{decrypt_(value[i][1], user.get())}',
-            #          style='TLabel').grid(row=i + 1, column=2, padx=(0, 50), pady=(25, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(0, 0), pady=(15, 0))
 
         Checkbutton_style = ttk.Style()
         Checkbutton_style.configure('checkbutton.TCheckbutton')
@@ -469,14 +459,10 @@ class Add_Pass(Frame):
         add.grid(row=0, column=1, pady=30)
 
         self.type = StringVar()
-        #self.email = StringVar()
-        #self.phone_num = StringVar()
         self.username = StringVar()
         self.password = StringVar()
 
         self.type.set('')
-        #self.email.set('')
-        #self.phone_num.set('')
         self.username.set('')
         self.password.set('')
 
@@ -492,18 +478,6 @@ class Add_Pass(Frame):
         type_Entry = ttk.Entry(Label_Frame, textvariable=self.type, width=30)
         type_Entry.grid(row=0, column=1, padx=10, pady=10)
         i += 1
-
-        #email_label = ttk.Label(Label_Frame, text=f'{i}] Email:', style="TLabel")
-        #email_label.grid(row=1, column=0, padx=10, pady=20)
-        #email_Entry = ttk.Entry(Label_Frame, textvariable=self.email, width=30)
-        #email_Entry.grid(row=1, column=1, padx=10, pady=10)
-        #i += 1
-
-        #phone_num_label = ttk.Label(Label_Frame, text=f'{i}] Phone No.:', style="TLabel")
-        #phone_num_label.grid(row=2, column=0, padx=10, pady=20)
-        #phone_num_Entry = ttk.Entry(Label_Frame, textvariable=self.phone_num, width=30)
-        #phone_num_Entry.grid(row=2, column=1, padx=10, pady=10)
-        #i += 1
 
         username_label = ttk.Label(Label_Frame, text=f'{i}] Username:', style="TLabel")
         username_label.grid(row=3, column=0, padx=10, pady=20)
@@ -541,8 +515,6 @@ class Add_Pass(Frame):
 
         def clear(self):
             self.type.set('')
-            #self.email.set('')
-            #self.phone_num.set('')
             self.username.set('')
             self.password.set('')
 
@@ -625,8 +597,6 @@ class Change_Pass(Frame):
         style1.configure('title.TLabel', font='Helvetica 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
-        #ttk.Label(main_frame, text=f'EMAIL/PHONE NO.', style='title.TLabel').grid(row=0, column=3, padx=(0, 70), pady=(0, 15))
-
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(0, 0), pady=(0, 15))
 
@@ -636,10 +606,6 @@ class Change_Pass(Frame):
                       style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
             ttk.Label(main_frame, text=f'{decrypt_(self.value[i][1], user.get())}',
                       style='TLabel').grid(row=i + 1, column=5, padx=(0, 30), pady=(15, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(self.value[i][0], user.get())}\n{decrypt_(self.value[i][1], user.get())}',
-            #          style='TLabel').grid(row=i + 1, column=3, padx=(0, 50), pady=(25, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(self.value[i][2], user.get())}', style='TLabel').grid(row=i + 1, column=4, padx=(0, 30), pady=(15, 0))
-            #ttk.Label(main_frame, text=f'{decrypt_(self.value[i][3], user.get())}', style='TLabel').grid(row=i + 1, column=5, padx=(0, 0), pady=(15, 0))
 
         Checkbutton_style = ttk.Style()
         Checkbutton_style.configure('checkbutton.TCheckbutton')
@@ -700,14 +666,10 @@ class Change_pass_label(Frame):
         add.grid(row=0, column=1, pady=30)
 
         self.type = StringVar()
-        #self.email = StringVar()
-        #self.phone_num = StringVar()
         self.username = StringVar()
         self.password = StringVar()
 
         self.type.set(decrypt_(self.key[c], user.get()))
-        #self.email.set(decrypt_(self.value[c][0], user.get()))
-        #self.phone_num.set(decrypt_(self.value[c][1], user.get()))
         self.username.set(decrypt_(self.value[c][0], user.get()))
         self.password.set(decrypt_(self.value[c][1], user.get()))
 
@@ -723,18 +685,6 @@ class Change_pass_label(Frame):
         type_Entry = ttk.Entry(Label_Frame, textvariable=self.type, width=30)
         type_Entry.grid(row=0, column=1, padx=10, pady=10)
         i += 1
-
-        #email_label = ttk.Label(Label_Frame, text=f'{i}] Email:', style="TLabel")
-        #email_label.grid(row=1, column=0, padx=10, pady=20)
-        #email_Entry = ttk.Entry(Label_Frame, textvariable=self.email, width=30)
-        #email_Entry.grid(row=1, column=1, padx=10, pady=10)
-        #i += 1
-
-        #phone_num_label = ttk.Label(Label_Frame, text=f'{i}] Phone No.:', style="TLabel")
-        #phone_num_label.grid(row=2, column=0, padx=10, pady=20)
-        #phone_num_Entry = ttk.Entry(Label_Frame, textvariable=self.phone_num, width=30)
-        #phone_num_Entry.grid(row=2, column=1, padx=10, pady=10)
-        #i += 1
 
         username_label = ttk.Label(Label_Frame, text=f'{i}] Username:', style="TLabel")
         username_label.grid(row=3, column=0, padx=10, pady=20)
@@ -790,8 +740,6 @@ class Change_pass_label(Frame):
 
         def clear(self):
             self.type.set('')
-            #self.email.set('')
-            #self.phone_num.set('')
             self.username.set('')
             self.password.set('')
 
@@ -875,10 +823,8 @@ def genwrite_key(username):
     with open(f"data/key/{username}.key", "wb") as key_file:
         key_file.write(key)
 
-
 def call_key(user):
     return open(f"data/key/{user}.key", "rb").read()
-
 
 def encrypt_(msg, username):
     key = call_key(username)
