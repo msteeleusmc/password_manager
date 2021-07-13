@@ -33,7 +33,7 @@ class MainApp(Tk):
             theme = 2
 
         self.title('CSCE_3550 Password Manager')
-        self.geometry('610x500')
+        self.geometry('710x600')
 
         global user, act_pass
         user = StringVar()
@@ -62,7 +62,7 @@ class AppFileMenu(Menu):
         Menu.__init__(self, parent)
         global theme
 
-        fileMenu = Menu(self, tearoff=False, background='white', fg='black', activeforeground='black', activebackground='slateblue')
+        fileMenu = Menu(self, tearoff=False, background='white', fg='black', activeforeground='black')
         self.add_cascade(label="User Options", underline=0, menu=fileMenu)
         fileMenu.add_command(label="Login", underline=1, command=lambda: parent.switch_frame(AppLoginPage))
         fileMenu.add_command(label="Sign up", underline=1, command=lambda: parent.switch_frame(AppSignUpPage))
@@ -93,7 +93,7 @@ class AppLoginPage(Frame, Menu):
         frame1.grid(row=0, column=0)
 
         ttk.Label(frame1,).grid(row=0, column=0, pady=(150, 5))
-        ttk.Label(frame1, text='LOGIN', style='login.TLabel', font='Helvetica 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
+        ttk.Label(frame1, text='LOGIN', style='login.TLabel', font='Times 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self)
         frame3.grid(row=1, column=0)
@@ -105,15 +105,15 @@ class AppLoginPage(Frame, Menu):
         p.config(show='*')
         self.x = 1
 
-        def showHiddenPassword(a):
+        def showHiddenPassword(input):
             global x
-            if a == 1:  # p.configure(show='*'):
+            if input == 1:
                 p.config(show='')
-                self.x = a + 1
+                self.x = input + 1
 
-            elif a == 2:  # p.configure(show=''):
+            elif input == 2:
                 p.config(show='*')
-                self.x = a - 1
+                self.x = input - 1
 
         b = Button(frame3, text='Show Password', command=lambda: showHiddenPassword(self.x), width=0, bd=0)
         b.grid(row=2, column=3)
@@ -168,7 +168,7 @@ class AppSignUpPage(Frame):
 
 
         ttk.Label(frame1).grid(row=0, column=0, pady=(150, 5))
-        ttk.Label(frame1, text='Create User Account', style='login.TLabel', font='Helvetica 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
+        ttk.Label(frame1, text='Create User Account', style='login.TLabel', font='Times 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self)
         frame3.grid(row=1, column=0)
@@ -180,14 +180,14 @@ class AppSignUpPage(Frame):
         p.config(show="*")
         self.x = 1
 
-        def showHiddenPassword(a):
-            if a == 1:  # p.configure(show='*'):
+        def showHiddenPassword(input):
+            if input == 1:
                 p.config(show='')
-                self.x = a + 1
+                self.x = input + 1
 
-            elif a == 2:  # p.configure(show=''):
+            elif input == 2:
                 p.config(show='*')
-                self.x = a - 1
+                self.x = input - 1
 
         b = Button(frame3, text='Show Password', command=lambda: showHiddenPassword(self.x), bd=0)
         b.grid(row=2, column=3)
@@ -200,7 +200,8 @@ class AppSignUpPage(Frame):
     def sign_up(self, master):
         if newuser.get() == '' or len(newact_pass.get()) < 8:
             msg.showerror('Invalid Input',
-                          'Please Enter Valid Username or\nPassword must 8 characters or more')
+                          'Please Enter Valid Username or Password.\n'
+                          'Ensure password is 8 characters or more')
         else:
             genwrite_key(newuser.get())
 
@@ -225,7 +226,7 @@ class AppUserVault(Frame):
         global_variable = AppUserVault
 
         Style2 = ttk.Style()
-        Style2.configure('title.TLabel', font='Helvetica 30 bold')
+        Style2.configure('title.TLabel', font='Times 30 bold')
 
         style = ttk.Style()
         style.configure('TButton', borderwidth=10)
@@ -234,7 +235,7 @@ class AppUserVault(Frame):
         frame.pack(pady=(50, 0))
 
 
-        title_label = ttk.Label(frame, text='PASSWORD MANAGER', style='title.TLabel')
+        title_label = ttk.Label(frame, text='MY VAULT', style='title.TLabel')
         title_label.grid(row=0, column=1)
 
         but_frame = Frame(self)
@@ -280,7 +281,7 @@ class Show_Pass(Frame):
         global_variable = Show_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', font='Times 30 bold')
 
         title_frame = Frame(root)
         title_frame.grid(row=0, column=0)
@@ -315,7 +316,7 @@ class Show_Pass(Frame):
         style1 = ttk.Style()
         style1.configure('title.TLabel', font='Helvetica 11 bold')
 
-        ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(0, 15))
+        ttk.Label(main_frame, text=f'URL/ACCOUNT', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(0, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
         ttk.Label(main_frame, text=f'PASSWORD', style='title.TLabel').grid(row=0, column=5, padx=(20, 0), pady=(0, 15))
 
@@ -355,7 +356,7 @@ class Delete_Pass(Show_Pass):
         global_variable = Delete_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', font='Times 30 bold')
 
 
         title_frame = Frame(root)
@@ -387,9 +388,9 @@ class Delete_Pass(Show_Pass):
             value.append(v)
 
         style = ttk.Style()
-        style.configure('TLabel', font='Helvetica 10')
+        style.configure('TLabel', font='Times 10')
         style1 = ttk.Style()
-        style1.configure('title.TLabel', font='Helvetica 11 bold')
+        style1.configure('title.TLabel', font='Times 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=1, padx=(0, 50), pady=(0, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
@@ -431,7 +432,7 @@ class Delete_Pass(Show_Pass):
             master.switch_frame(AppUserVault)
 
         style = ttk.Style()
-        style.configure('TButton', background='slateblue', borderwidth=0)
+        style.configure('TButton',  borderwidth=0)
 
         b1 = ttk.Button(but_frame, text='Delete', command=lambda: delete(self, master), style='TButton')
         b1.grid(row=0, column=0, padx=(0, 100))
@@ -454,7 +455,7 @@ class Add_Pass(Frame):
         global_variable = Add_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', font='Times 30 bold')
 
         title_frame = Frame(self)
         title_frame.grid(row=0, column=0)
@@ -474,10 +475,10 @@ class Add_Pass(Frame):
         Label_Frame.grid(row=1, column=0, padx=(0, 200))
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel', font='Helvetica 11 bold')
+        Style1.configure('TLabel', font='Times 11 bold')
         i = 1
 
-        type_label = ttk.Label(Label_Frame, text=f'{i}] Type:', style="TLabel")
+        type_label = ttk.Label(Label_Frame, text=f'{i}] URL/Account:', style="TLabel")
         type_label.grid(row=0, column=0, padx=10, pady=20)
         type_Entry = ttk.Entry(Label_Frame, textvariable=self.type, width=30)
         type_Entry.grid(row=0, column=1, padx=10, pady=10)
@@ -499,11 +500,11 @@ class Add_Pass(Frame):
         self.x = 1
 
         def showHiddenPassword(a):
-            if a == 1:  # p.configure(show='*'):
+            if a == 1:
                 password_Entry.config(show='')
                 self.x = a + 1
 
-            elif a == 2:  # p.configure(show=''):
+            elif a == 2:
                 password_Entry.config(show='*')
                 self.x = a - 1
 
@@ -523,7 +524,7 @@ class Add_Pass(Frame):
             self.password.set('')
 
         def back(master):
-            choics = msg.askquestion('Confoirm', 'Do you really want to Go Back')
+            choics = msg.askquestion('Confirm', 'Do you really want to Go Back')
             if choics == 'yes':
                 master.switch_frame(AppUserVault)
             else:
@@ -547,9 +548,9 @@ class Add_Pass(Frame):
                 master.switch_frame(AppUserVault)
 
 
-        save_but = ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0, column=0, padx=10)
-        clear_but = ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,column=1, padx=10)
-        back_but = ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
+        ttk.Button(but_frame, text='Save', style='TButton', command=lambda: add(self, master)).grid(row=0, column=0, padx=10)
+        ttk.Button(but_frame, text='All Clear', style='TButton', command=lambda: clear(self)).grid(row=0,column=1, padx=10)
+        ttk.Button(but_frame, text='Back', style='TButton', command=lambda: back(master)).grid(row=0, column=2, padx=10)
 
 
 # -------------------------------------------------------------------------------------------------------------------------------
@@ -567,7 +568,7 @@ class Change_Pass(Frame):
         global_variable = Change_Pass
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', font='Times 30 bold')
 
         title_frame = Frame(root)
         title_frame.grid(row=0, column=0)
@@ -599,9 +600,9 @@ class Change_Pass(Frame):
             self.value.append(v)
 
         style = ttk.Style()
-        style.configure('TLabel', font='Helvetica 10 ')
+        style.configure('TLabel', font='Times 10 ')
         style1 = ttk.Style()
-        style1.configure('title.TLabel', font='Helvetica 11 bold')
+        style1.configure('title.TLabel', font='Times 11 bold')
 
         ttk.Label(main_frame, text=f'TYPE', style='title.TLabel').grid(row=0, column=2, padx=(0, 50), pady=(10, 15))
         ttk.Label(main_frame, text=f'USERNAME', style='title.TLabel').grid(row=0, column=4, padx=(10, 44), pady=(0, 15))
@@ -635,7 +636,7 @@ class Change_Pass(Frame):
         but_frame.grid(row=2, column=0)
 
         style = ttk.Style()
-        style.configure('TButton', background='slateblue', borderwidth=5)
+        style.configure('TButton', borderwidth=5)
 
         def back(master):
             master.switch_frame(AppUserVault)
@@ -667,7 +668,7 @@ class Change_pass_label(Frame):
             self.value.append(v)
 
         Style3 = ttk.Style()
-        Style3.configure('title2.TLabel', font='Helvetica 30 bold')
+        Style3.configure('title2.TLabel', font='Times 30 bold')
 
         title_frame = Frame(self)
         title_frame.grid(row=0, column=0)
@@ -686,7 +687,7 @@ class Change_pass_label(Frame):
         Label_Frame.grid(row=1, column=0, padx=(0, 200))
 
         Style1 = ttk.Style()
-        Style1.configure('TLabel', font='Helvetica 11 bold')
+        Style1.configure('TLabel', font='Times 11 bold')
         i = 1
 
         type_label = ttk.Label(Label_Frame, text=f'{i}] Type:', style="TLabel")
