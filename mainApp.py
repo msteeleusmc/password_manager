@@ -131,8 +131,9 @@ class AppLoginPage(Frame, Menu):
             with open(f'data/user_data/{user.get()}_pass_file.p', 'rb') as f:
                 listt = pickle.load(f)
             a = decrypt_(listt[0], user.get())
-            b = decrypt_(listt[1], user.get())
-            if user.get() == a and act_pass.get() == b:
+            #b = decrypt_(listt[1], user.get())
+            b = check_hash_(act_pass.get(), listt[1])
+            if user.get() == a and b:
                 master.switch_frame(AppUserVault)
             else:
                 msg.showerror('Wrong', "Wrong user or password")
@@ -206,7 +207,8 @@ class AppSignUpPage(Frame):
             genwrite_key(newuser.get())
 
             a = encrypt_(newuser.get(), newuser.get())
-            b = encrypt_(newact_pass.get(), newuser.get())
+           # b = encrypt_(newact_pass.get(), newuser.get())
+            b = hash_(newact_pass.get())
 
             with open(f'data/user_data/{newuser.get()}_pass_file.p', 'wb') as f:
                 pickle.dump([a, b], f)
@@ -811,8 +813,9 @@ class DeleteUserAcount(Frame):
             with open(f'data/user_data/{user.get()}_pass_file.p', 'rb') as f:
                 listt = pickle.load(f)
                 a = decrypt_(listt[0], user.get())
-                b = decrypt_(listt[1], user.get())
-            if user.get() == a and act_pass.get() == b:
+                #b = decrypt_(listt[1], user.get())
+                b = check_hash_(act_pass.get(), listt[1])
+            if user.get() == a and b:
                 choics = msg.askquestion('Confirm', 'Do you really want to delete')
                 if choics == 'yes':
                     self.delete()
