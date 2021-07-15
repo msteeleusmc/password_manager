@@ -11,6 +11,8 @@ import tkinter.messagebox as msg
 from cryptography.fernet import Fernet
 import os, pickle
 import hashlib
+import os.path
+from os import path
 
 # -------------------------------------------------------------------------------------------------------------------------------
 #                                           Global variable used for each GUI page
@@ -29,8 +31,6 @@ class MainApp(Tk):
             f1 = open('data/mainApp_data/_data.p', 'rb')
             theme = pickle.load(f1)
             f1.close()
-        else:
-            theme = 2
 
         self.title('CSCE_3550 Password Manager')
         self.geometry('710x600')
@@ -92,7 +92,7 @@ class AppLoginPage(Frame, Menu):
         frame1 = Frame(self)
         frame1.grid(row=0, column=0)
 
-        ttk.Label(frame1,).grid(row=0, column=0, pady=(150, 5))
+        ttk.Label(frame1,).grid(row=0, column=0, pady=(0, 5))
         ttk.Label(frame1, text='LOGIN', style='login.TLabel', font='Times 30 bold').grid(row=0, column=1, pady=(150, 5), padx=(8, 0))
 
         frame3 = Frame(self)
@@ -131,7 +131,7 @@ class AppLoginPage(Frame, Menu):
             with open(f'data/user_data/{user.get()}_pass_file.p', 'rb') as f:
                 listt = pickle.load(f)
             a = decrypt_(listt[0], user.get())
-            #b = decrypt_(listt[1], user.get())
+            # Here is where the password is checked against the saved hash
             b = check_hash_(act_pass.get(), listt[1])
             if user.get() == a and b:
                 master.switch_frame(AppUserVault)
@@ -204,17 +204,22 @@ class AppSignUpPage(Frame):
                           'Please Enter Valid Username or Password.\n'
                           'Ensure password is 8 characters or more')
         else:
-            genwrite_key(newuser.get())
+            if (path.exists(f'data/user_data/{newuser.get()}_pass_file.p')):
+                msg.showerror('Invalid Input',
+                              'Please choose a different user name.\n'
+                              'Ensure password is 8 characters or more')
+            else:
+                genwrite_key(newuser.get())
 
-            a = encrypt_(newuser.get(), newuser.get())
-           # b = encrypt_(newact_pass.get(), newuser.get())
-            b = hash_(newact_pass.get())
+                a = encrypt_(newuser.get(), newuser.get())
+                #Here is were the sign up password is hashed and saved into the file
+                b = hash_(newact_pass.get())
 
-            with open(f'data/user_data/{newuser.get()}_pass_file.p', 'wb') as f:
-                pickle.dump([a, b], f)
+                with open(f'data/user_data/{newuser.get()}_pass_file.p', 'wb') as f:
+                    pickle.dump([a, b], f)
 
-            msg.showinfo('Account Added Successfully', 'Your Account has been Added\nPlease Login you account to access')
-            master.switch_frame(AppLoginPage)
+                msg.showinfo('Account Added Successfully', 'Your Account has been Added\nPlease Login you account to access')
+                master.switch_frame(AppLoginPage)
 
 # -------------------------------------------------------------------------------------------------------------------------------
 #                                        Displays User Interface after Login
